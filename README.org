@@ -17,7 +17,9 @@ Or, if you want to process multiple files simultaneously:
 ~fslx op img1 img2 img3 ...~
 
 Exceptions to the rule are simple to remember though, such as in the case of realignment:
-~fslx reg reference img1 img2 img3~
+#+BEGIN_SRC bash
+fslx reg reference img1 img2 img3
+#+END_SRC
 And in the case of merging files, where FSLX does exactly what you would expect.
 
 
@@ -48,7 +50,7 @@ As of yet, FSLX supports the following:
 | header or hd             | Read image header                  | no       | fslhd                  |
 | nvols                    | Query number of volumes in image   | no       | fslnvols               |
 
-Coming soon, hopefully: temporal filtering, segmentation, ICA.
+Coming soon, hopefully: temporal filtering, segmentation with FAST, ICA, smart registration to MNI152.
 
 ** Piping commands
 You can use xargs to build a nice easy processing pipeline. Most operations are supported.
@@ -87,7 +89,6 @@ echo 'export "PATH='$currdir'/fslx/:$PATH"' >> ~/.bashrc
 - Read from STDIN?
 
 ** Why?
------
 Pick one that suits you:
 
 - Nipype takes too many lines of code and I have a PhD to finish.
@@ -96,7 +97,6 @@ Pick one that suits you:
 
 
 * Thanks
------
 The awesome [[https://fsl.fmrib.ox.ac.uk/fsl/fslwiki][FSL]].
 The poweful BASH.
 
