@@ -66,7 +66,7 @@ niftis in a directory (and register then to a T1 weighted, of course):
 ls | xargs flsx moco | xargs fslx tsnr | xargs fslx nan | xargs fslx reg brain
 #+END_SRC
 
-For maximum efficiency, you can alias ~xargs fslx~:
+To maximize dumbness, you can alias ~xargs fslx~:
 #+BEGIN_SRC bash
 alias xfslx='xargs fslx '
 ls | xflsx moco | xfslx tsnr | xfslx nan | xfslx reg brain > list_of_processed_files.txt
