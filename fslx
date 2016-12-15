@@ -33,8 +33,7 @@
 # TODO: Add support for dual_regression
 # TODO: Add support for mixture modelling.
 
-if (($# < 1))
-then
+function echo_help {
     echo "Welcome to fslx v0.1!! The *dumbest* wrapper of all times."
     echo "Fslx requires an operation and one or more inputs:"
     echo "Compute mean image: fslx mean img1 img2"
@@ -58,6 +57,11 @@ then
     echo "Disclaimer 2: no, I don't plan to implement reading from STDIN, so just use xargs."
     echo ""
     echo "Written by Daniel Gomez"
+}
+
+if (($# < 1))
+then
+    echo_help
     exit 0
 fi
 
