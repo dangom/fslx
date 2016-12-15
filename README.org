@@ -2,9 +2,6 @@
 #+AUTHOR: Daniel Gomez
 #+DATE: 14.12.2016
 
-* FSLX
------
-
 FSLX is a *dumb* wrapper around some of fsltools. It exists so I don't have to
 remember the arbitrary names of fsl tools, nor the inconsistent parameter naming
 conventions of each of them.
@@ -41,6 +38,7 @@ Example - motion correct, compute the tSNR, and remove NaNs of all 4D niftis in 
 
 For maximum efficiency, you can alias the following:
 ~alias xfslx='xargs fslx '~
+And then call the above example with less verbosity:
 ~ls | xflsx moco | xfslx tsnr | xfslx nan~
 
 ** Installation
@@ -51,12 +49,12 @@ Put fslx on your PATH.
 - A Unix like environment with a sane shell available (Linux / MacOS).
 
 ** TO DO
-# TODO: Support for applyxfm, registration to MNI, concatenate transformation matrices.
-# TODO: FAST segmentation
-# TODO: Support for Melodic ICA.
-# TODO: Add support for dual_regression
-# TODO: Add support for mixture modelling.
-# TODO: Read from STDIN?
+- Support for applyxfm, registration to MNI, concatenate transformation matrices.
+- FAST segmentation
+- Support for Melodic ICA.
+- Add support for dual_regression
+- Add support for mixture modelling.
+- Read from STDIN?
 
 ** Why?
 -----
