@@ -107,6 +107,7 @@ Pick one that suits you:
 - Nipype takes too many lines of code and I have a PhD to finish.
 - The lack of sleep makes me forget fsl commands, and the Wiki doesn't see much loving.
 - FSL has decent defaults and 99% of the times I don't need to customize anything.
+- Gee, what the hell happened to my data?
 
 
 * Thanks
