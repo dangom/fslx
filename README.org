@@ -12,6 +12,7 @@ my search engine's top 3, so I had to write my own.
 
 The usage syntax is the same for all operations:
 ~fslx op img1~
+
 Or, if you want to process multiple files simultaneously:
 ~fslx op img1 img2 img3 ...~
 
@@ -36,13 +37,24 @@ You can use xargs to build a nice easy processing pipeline. Most operations are 
 Example - motion correct, compute the tSNR, and remove NaNs of all 4D niftis in a directory:
 ~ls | xargs flsx moco | xargs fslx tsnr | xargs fslx nan~
 
-For maximum efficiency, you can alias the following:
-~alias xfslx='xargs fslx '~
-And then call the above example with less verbosity:
-~ls | xflsx moco | xfslx tsnr | xfslx nan~
+For maximum efficiency, you can alias ~xargs fslx~:
+#+BEGIN_SRC bash
+alias xfslx='xargs fslx '
+ls | xflsx moco | xfslx tsnr | xfslx nan
+#+END_SRC
+And then call the pipe with less verbosity.
+
+Note: you get all of your intermediate results, so much sure you have enough disk space.
 
 ** Installation
 Put fslx on your PATH.
+
+#+BEGIN_SRC bash
+git clone https://github.com/dangom/fslx.git
+chmod +x fslx/fslx
+currdir=`pwd`
+echo 'export "PATH='$currdir'/fslx/:$PATH"' >> ~/.bashrc
+#+END_SRC
 
 ** Dependencies
 - FSL
