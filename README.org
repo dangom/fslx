@@ -67,7 +67,7 @@ niftis in a directory (and register then to a T1 weighted, of course):
 ls | xargs flsx moco | xargs fslx tsnr | xargs fslx nan | xargs fslx reg brain
 #+END_SRC
 
-For maximum efficiency, you can alias ~xargs fslx~:
+To maximize dumbness, you can alias ~xargs fslx~:
 #+BEGIN_SRC bash
 alias xfslx='xargs fslx '
 ls | xflsx moco | xfslx tsnr | xfslx nan | xfslx reg brain > list_of_processed_files.txt
@@ -109,6 +109,7 @@ echo 'export "PATH='$currdir'/fslx/:$PATH"' >> ~/.bashrc
 - Support for Melodic ICA.
 - Add support for dual_regression
 - Add support for mixture modelling.
+- Support for pipe filtering: fslx moco | xfslx when TR smaller than 2 | xfslx highpass
 - Read from STDIN?
 - Be cleverer wrt output directories?
 
