@@ -1,0 +1,73 @@
+#+TITLE: FSLX
+#+AUTHOR: Daniel Gomez
+#+DATE: 14.12.2016
+
+* FSLX
+-----
+
+FSLX is a *dumb* wrapper around some of fsltools. It exists so I don't have to
+remember the arbitrary names of fsl tools, nor the inconsistent parameter naming
+conventions of each of them.
+There are probably thousands of tools like this one out there, but they weren't on
+my search engine's top 3, so I had to write my own.
+
+** Syntax
+
+The usage syntax is the same for all operations:
+~fslx op img1~
+Or, if you want to process multiple files simultaneously:
+~fslx op img1 img2 img3 ...~
+
+Exceptions to the rule are simple to remember though, such as in the case of realignment:
+~fslx reg reference img1 img2 img3~
+And in the case of merging files, where FSLX does exactly what you would expect.
+
+
+To make things even dummer, operations have alias so that you can type synonyms
+and things just work. Alignment, for example, can be called with any of ~reg|align|register~.
+
+** Supported operations
+
+As of yet, FSLX supports the following:
+
+| Operation | Effect | Pipeable | Original FSL name |
+
+todo (meanwhile check code.)..
+
+** Piping commands
+You can use xargs to build a nice easy processing pipeline. Most operations are supported.
+Example - motion correct, compute the tSNR, and remove NaNs of all 4D niftis in a directory:
+~ls | xargs flsx moco | xargs fslx tsnr | xargs fslx nan~
+
+For maximum efficiency, you can alias the following:
+~alias xfslx='xargs fslx '~
+~ls | xflsx moco | xfslx tsnr | xfslx nan~
+
+** Installation
+Put fslx on your PATH.
+
+** Dependencies
+- FSL
+- A Unix like environment with a sane shell available (Linux / MacOS).
+
+** TO DO
+# TODO: Support for applyxfm, registration to MNI, concatenate transformation matrices.
+# TODO: FAST segmentation
+# TODO: Support for Melodic ICA.
+# TODO: Add support for dual_regression
+# TODO: Add support for mixture modelling.
+# TODO: Read from STDIN?
+
+** Why?
+-----
+Pick one that suits you:
+
+Nipype takes too many lines of code and I have a PhD to finish.
+The lack of sleep makes me forget fsl commands, and the Wiki doesn't see much loving.
+FSL has decent defaults and 99% of the times I don't need to customize anything.
+
+
+* Thanks
+-----
+The awesome FSL.
+The poweful BASH.

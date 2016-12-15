@@ -1,0 +1,187 @@
+#!/bin/bash
+# Copyright (c) 2016 Daniel Gomez <d.gomez@donders.ru.nl>
+
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+
+# FSLX is a *dumb* wrapper around some of fsltools.
+# It exists so I don't have to remember the arbitrary names of fsl tools,
+# nor the inconsistent parameter naming conventions of each of them.
+# It also accepts multiple images as input to perform the same operations,
+# so one can do something like:
+# ls | xargs fslx nan
+# And remove nans of all images in a particular directory, for example.
+# TODO: Support for applyxfm, registration to MNI, concatenate transformation matrices.
+# TODO: Read from STDIN?
+# TODO: FAST segmentation
+# TODO: Support for Melodic ICA.
+# TODO: Add support for dual_regression
+# TODO: Add support for mixture modelling.
+
+if (($# < 1))
+then
+    echo "Welcome to fslx v0.1!! The *dumbest* wrapper of all times."
+    echo "Fslx requires an operation and one or more inputs:"
+    echo "Compute mean image: fslx mean img1 img2"
+    echo ""
+    echo "Currently supported operations: moco|mc tmean tstd tsnr abs recip bin nan sin exp rmskull|brain|bet"
+    echo "Query operations (not pipeable): nvols info header|hd (stats not implemented yet)."
+    echo "Temporal split and merge operations (not pipeable currently): split merge"
+    echo "Linear registration:"
+    echo "fslx align reference img1 img2"
+    echo ""
+    echo "Because it accepts multiple images, you can do cool stuff like for example:"
+    echo "ls | xargs fslx moco | xargs fslx tsnr | xargs fslx nan > list_of_processed_files.txt"
+    echo "And get the tsnr (nans converted to 0s ) for all your motion corrected files - and a list of them."
+    echo "That is the reason why I love nipype. Not."
+    echo ""
+    echo "Disclaimer: use at your own risk."
+    echo "Disclaimer 2: no, I don't plan to implement reading from STDIN, so just use xargs."
+    echo ""
+    echo "Written by Daniel Gomez"
+    exit 0
+fi
+
+# The operation to perform is ALWAYS the first argument to our wrapper.
+operation=$1
+
+# We define an array called inputs, which contains all files to process.
+# We also define filenames, which are the inputs without file extensions.
+for (( i=2 ; i<=$# ; i++ )) ; do
+    currfile=`echo ${!i}`
+    inputs[$i-2]=$currfile
+    filenames[$i-2]="${currfile%%.*}"
+done
+
+#echo "You choose operation $operation"
+#echo "The operation will be applied in "
+#echo ${filenames[@]}
+
+# I am aware that there is lots of code repetition and that I could easily refactor the following switch, so:
+# TODO: Eliminate obscene amount of repetition.
+INDEX_AT=0
+for f in ${inputs[@]}
+do
+    case $operation in
+        tmean)
+            # Compute the temporal mean of the image in time. Reduces a 4D to a 3D volume.
+            fslmaths $f -Tmean ${filenames[$INDEX_AT]}_mean.nii.gz
+            echo ${filenames[$INDEX_AT]}_mean.nii.gz
+            ;;
+        tstd)
+            # Compute the standard deviation of the image in time. Reduces a 4D to a 3D volume.
+            fslmaths $f -Tstd ${filenames[$INDEX_AT]}_std.nii.gz
+            echo ${filenames[$INDEX_AT]}_std.nii.gz
+            ;;
+        tsnr)
+            # Compute the ratio of the mean and standard deviation of the image (in time). Reduces a 4D to a 3D volume.
+            fslmaths $f -Tmean ${filenames[$INDEX_AT]}_mean_deleteme.nii.gz
+            fslmaths $f -Tstd ${filenames[$INDEX_AT]}_std_deleteme.nii.gz
+            fslmaths ${filenames[$INDEX_AT]}_mean_deleteme.nii.gz -div ${filenames[$INDEX_AT]}_std_deleteme.nii.gz ${filenames[$INDEX_AT]}_tsnr.nii.gz
+            rm ${filenames[$INDEX_AT]}_mean_deleteme.nii.gz ${filenames[$INDEX_AT]}_std_deleteme.nii.gz
+            echo ${filenames[$INDEX_AT]}_tsnr.nii.gz
+            ;;
+        exp)
+            # Compute e**image, voxelwise.
+            fslmaths $f -exp ${filenames[$INDEX_AT]}_exp.nii.gz
+            echo ${filenames[$INDEX_AT]}_exp.nii.gz
+            ;;
+        sin)
+            # Compute sin(image), voxelwise.
+            fslmaths $f -sin ${filenames[$INDEX_AT]}_sin.nii.gz
+            echo ${filenames[$INDEX_AT]}_sin.nii.gz
+            ;;
+        abs)
+            # Compute the absolute value of an image, pixelwise.
+            fslmaths $f -abs ${filenames[$INDEX_AT]}_abs.nii.gz
+            echo ${filenames[$INDEX_AT]}_abs.nii.gz
+            ;;
+        bin)
+            # Create a binary image from the input. Values > 0 are set to 1.
+            fslmaths $f -bin ${filenames[$INDEX_AT]}_bin.nii.gz
+            echo ${filenames[$INDEX_AT]}_bin.nii.gz
+            ;;
+        nan)
+            # Remove nans.
+            fslmaths $f -nan ${filenames[$INDEX_AT]}_no_nans.nii.gz
+            echo ${filenames[$INDEX_AT]}_no_nans.nii.gz
+            ;;
+        recip)
+            # Compute 1/image, voxelwise.
+            fslmaths $f -recip ${filenames[$INDEX_AT]}_recip.nii.gz
+            echo ${filenames[$INDEX_AT]}_recip.nii.gz
+            ;;
+        moco|mc)
+            # Motion correction.
+            mcflirt -in $f -out ${filenames[$INDEX_AT]}_mcf.nii.gz
+            echo ${filenames[$INDEX_AT]}_mcf.nii.gz
+            ;;
+        header|hd)
+            # Read the header.
+            fslhd $f
+            ;;
+        bet|brain|rmskull)
+            # Remove the skull from (ideally) an anatomical image.
+            bet -in $f -out ${filenames[$INDEX_AT]}_noskull.nii.gz
+            echo ${filenames[$INDEX_AT]}_noskull.nii.gz
+            ;;
+        split|tsplit)
+            # Split a 4d dataset into multiple 3d.
+            fslsplit $f $f -t
+            ;;
+        merge|tmerge)
+            # Merge multiple 2d into a 3d, or multiple 3d into a 4d dataset.
+            fslmerge -a ${filenames[0]}_upto_${filenames[-1]}_merged.nii.gz `echo ${filenames[@]}`
+            break
+            ;;
+        nvols)
+            # Returns the number of volumes in a 4D image.
+            fslnvols $f
+            ;;
+        info)
+            # Short info read from the header (datatype and dimensions).
+            fslinfo $f
+            ;;
+        align|register|reg)
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${filenames[$j]}_reg_to_$f.nii.gz
+                flirt -in ${inputs[j]} -ref $f -out $outname > /dev/null
+                echo $outname
+            done
+            break
+            ;;
+        bandpass|bandfilter|bfilter|bfilt)
+            ;;
+        lowpass|lowfilter|lfilter|lfilt)
+            ;;
+        highpass|highfilter|hfilter|hfilt)
+            ;;
+        # stats)
+        #     # Stats
+        #     fslstats $f
+        #     ;;
+        *)
+            echo "Operation not implemented yet."
+            break
+            ;;
+    esac
+    ((INDEX_AT=INDEX_AT+1))
+done
+
+# In case I decide to write something else later..
+INDEX_AT=
