@@ -65,20 +65,20 @@ You can use xargs to build a nice easy processing pipeline. Most operations are
 supported. Example - motion correct, compute the tSNR, remove NaNs of all 4D
 niftis in a directory (and register then to a T1 weighted, of course):
 #+BEGIN_SRC bash
-ls | xargs flsx moco | xargs fslx tsnr | xargs fslx nan | xargs fslx reg brain
+ls | xargs flsx moco | xargs fslx tsnr | xargs fslx nan | xargs fslx reg T1w
 #+END_SRC
 
 To maximize dumbness, you can alias ~xargs fslx~:
 #+BEGIN_SRC bash
 alias xfslx='xargs fslx '
-ls | xflsx moco | xfslx tsnr | xfslx nan | xfslx reg brain > list_of_processed_files.txt
+ls | xflsx moco | xfslx tsnr | xfslx nan | xfslx reg T1w > list_of_processed_files.txt
 #+END_SRC
 And then call the pipe with less verbosity.
 
 To see intermediate results, simply add a call to the viewer in the middle of your pipe:
 #+BEGIN_SRC bash
 alias xfslx='xargs fslx '
-ls | xflsx moco | xfslx tsnr | xfslx nan | xfslx v |xfslx reg brain > list_of_processed_files.txt
+ls | xflsx moco | xfslx tsnr | xfslx nan | xfslx v |xfslx reg T1w > list_of_processed_files.txt
 #+END_SRC
 
 
