@@ -106,7 +106,7 @@ do
             fslmaths $f -sin ${filenames[$INDEX_AT]}_sin.nii.gz
             echo ${filenames[$INDEX_AT]}_sin.nii.gz
             ;;
-        abs)
+        abs|mag|magn)
             # Compute the absolute value of an image, pixelwise.
             fslmaths $f -abs ${filenames[$INDEX_AT]}_abs.nii.gz
             echo ${filenames[$INDEX_AT]}_abs.nii.gz
@@ -116,7 +116,7 @@ do
             fslmaths $f -bin ${filenames[$INDEX_AT]}_bin.nii.gz
             echo ${filenames[$INDEX_AT]}_bin.nii.gz
             ;;
-        nan)
+        nan|nans)
             # Remove nans.
             fslmaths $f -nan ${filenames[$INDEX_AT]}_no_nans.nii.gz
             echo ${filenames[$INDEX_AT]}_no_nans.nii.gz
@@ -147,6 +147,7 @@ do
         merge|tmerge)
             # Merge multiple 2d into a 3d, or multiple 3d into a 4d dataset.
             fslmerge -a ${filenames[0]}_upto_${filenames[-1]}_merged.nii.gz `echo ${filenames[@]}`
+            echo ${filenames[0]}_upto_${filenames[-1]}_merged.nii.gz
             break
             ;;
         nvols)
