@@ -173,15 +173,19 @@ do
         highpass|highfilter|hfilter|hfilt)
             ;;
         smooth2)
+            # Smooth with a kernel of 2mm.
             fslmaths $f -s 2 ${filenames[$INDEX_AT]}_smooth2mm.nii.gz
             ;;
         smooth3)
+            # Smooth with a kernel of 3mm.
             fslmaths $f -s 3 ${filenames[$INDEX_AT]}_smooth3mm.nii.gz
             ;;
         smooth4)
+            # Smooth with a kernel of 4mm.
             fslmaths $f -s 4 ${filenames[$INDEX_AT]}_smooth4mm.nii.gz
             ;;
         smooth5)
+            # Smooth with a kernel of 5mm.
             fslmaths $f -s 5 ${filenames[$INDEX_AT]}_smooth5mm.nii.gz
             ;;
         # stats)

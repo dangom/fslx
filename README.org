@@ -30,27 +30,28 @@ and things just work. Alignment, for example, can be called with any of ~reg|ali
 
 As of yet, FSLX supports the following:
 
-| Operation                | Effect                             | Pipeable | Original FSL operation |
-|--------------------------+------------------------------------+----------+------------------------|
-| tmean                    | Compute temporal mean              | yes      | fslmaths -Tmean        |
-| tstd                     | Compute temporal std               | yes      | fslmaths -Tstd         |
-| tsnr                     | Compute temporal tsnr              | yes      | fslmaths mean -div std |
-| moco or mc               | Motion correction                  | yes      | mcflirt                |
-| brain or rmskull or bet  | Remove skull                       | yes      | bet                    |
-| merge or tmerge          | Merge 2D -> or 3D -> 4D            | yes      | fslmerge               |
-| split or tsplit          | Split 4D image into multiple 3D    | no yet   | fslsplit               |
-| align or register or reg | Align image to reference           | yes      | flirt                  |
-| smooth2 , 3 , 4 , 5      | Smooth image with a 2,3,4,5 kernel | yes      | fslmaths -s            |
-| nan or nans              | image(image==nan) = 0              | yes      | fslmaths -nan          |
-| exp                      | Compute e^image                    | yes      | fslmaths -exp          |
-| sin                      | Compute sin(image)                 | yes      | fslmaths -sin          |
-| abs or mag or magn       | Compute abs(image)                 | yes      | fslmaths -abs          |
-| bin                      | image(image>0) ? 1 : 0             | yes      | fslmaths -bin          |
-| recip                    | 1/image, voxelwise                 | yes      | fslmaths -recip        |
-| header or hd             | Read image header                  | no       | fslhd                  |
-| nvols                    | Query number of volumes in image   | no       | fslnvols               |
+| Operation                | Effect                              | Pipeable | Original FSL operation |
+|--------------------------+-------------------------------------+----------+------------------------|
+| tmean                    | Compute temporal mean               | yes      | fslmaths -Tmean        |
+| tstd                     | Compute temporal std                | yes      | fslmaths -Tstd         |
+| tsnr                     | Compute temporal tsnr               | yes      | fslmaths mean -div std |
+| moco or mc               | Motion correction                   | yes      | mcflirt                |
+| brain or rmskull or bet  | Remove skull                        | yes      | bet                    |
+| merge or tmerge          | Merge 2D -> or 3D -> 4D             | yes      | fslmerge               |
+| split or tsplit          | Split 4D image into multiple 3D     | no yet   | fslsplit               |
+| align or register or reg | Align image to reference            | yes      | flirt                  |
+| smooth2 , 3 , 4 , 5      | Smooth image with a 2,3,4,5 kernel  | yes      | fslmaths -s            |
+| nan or nans              | image(image==nan) = 0               | yes      | fslmaths -nan          |
+| exp                      | Compute e^image                     | yes      | fslmaths -exp          |
+| sin                      | Compute sin(image)                  | yes      | fslmaths -sin          |
+| abs or mag or magn       | Compute abs(image)                  | yes      | fslmaths -abs          |
+| bin                      | image(image>0) ? 1 : 0              | yes      | fslmaths -bin          |
+| recip                    | 1/image, voxelwise                  | yes      | fslmaths -recip        |
+| header or hd             | Read image header                   | no       | fslhd                  |
+| nvols                    | Query number of volumes in image    | no       | fslnvols               |
+| info                     | Query info, e.g., image dimensions  | no       | fslinfo                |
 
-Coming soon, hopefully: temporal filtering, segmentation with FAST, ICA, smart registration to MNI152.
+Coming soon, hopefully: stats, temporal filtering, segmentation with FAST, ICA, smart registration to MNI152.
 
 ** Piping commands
 You can use xargs to build a nice easy processing pipeline. Most operations are supported.
