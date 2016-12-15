@@ -59,18 +59,17 @@ As of yet, FSLX supports the following:
 Coming soon, hopefully: stats, temporal filtering, segmentation with FAST, ICA, smart registration to MNI152.
 
 ** Piping commands
-You can use xargs to build a nice easy processing pipeline. Most operations are supported.
-Example - motion correct, compute the tSNR, and remove NaNs of all 4D niftis in
-a directory:
+You can use xargs to build a nice easy processing pipeline. Most operations are
+supported. Example - motion correct, compute the tSNR, remove NaNs of all 4D
+niftis in a directory (and register then to a T1 weighted, of course):
 #+BEGIN_SRC bash
-ls | xargs flsx moco | xargs fslx tsnr | xargs fslx nan
+ls | xargs flsx moco | xargs fslx tsnr | xargs fslx nan | xargs fslx reg brain
 #+END_SRC
-
 
 For maximum efficiency, you can alias ~xargs fslx~:
 #+BEGIN_SRC bash
 alias xfslx='xargs fslx '
-ls | xflsx moco | xfslx tsnr | xfslx nan
+ls | xflsx moco | xfslx tsnr | xfslx nan | xfslx reg brain > list_of_processed_files.txt
 #+END_SRC
 And then call the pipe with less verbosity.
 
