@@ -109,6 +109,24 @@ do
             fslmaths $f -exp ${filenames[$INDEX_AT]}_exp.nii.gz
             echo ${filenames[$INDEX_AT]}_exp.nii.gz
             ;;
+        lthresh|lthr)
+            # Compute e**image, voxelwise.
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${filenames[$j]}_lthresh$f.nii.gz
+                fslmaths ${inputs[j]} -thr $f $outname > /dev/null
+                echo $outname
+            done
+            break
+            ;;
+        uthresh|uthr|hthresh|hthr)
+            # Compute e**image, voxelwise.
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${filenames[$j]}_uthresh$f.nii.gz
+                fslmaths ${inputs[j]} -uthr $f $outname > /dev/null
+                echo $outname
+            done
+            break
+            ;;
         sin)
             # Compute sin(image), voxelwise.
             fslmaths $f -sin ${filenames[$INDEX_AT]}_sin.nii.gz
