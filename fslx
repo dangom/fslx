@@ -167,10 +167,13 @@ do
             break
             ;;
         bandpass|bandfilter|bfilter|bfilt)
+            # Apply bandpass temporal filter
             ;;
         lowpass|lowfilter|lfilter|lfilt)
+            # Apply lowpass temporal filter.
             ;;
         highpass|highfilter|hfilter|hfilt)
+            # Apply highpass temporal filter.
             ;;
         smooth2)
             # Smooth with a kernel of 2mm.
