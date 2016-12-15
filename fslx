@@ -172,6 +172,18 @@ do
             ;;
         highpass|highfilter|hfilter|hfilt)
             ;;
+        smooth2)
+            fslmaths $f -s 2 ${filenames[$INDEX_AT]}_smooth2mm.nii.gz
+            ;;
+        smooth3)
+            fslmaths $f -s 3 ${filenames[$INDEX_AT]}_smooth3mm.nii.gz
+            ;;
+        smooth4)
+            fslmaths $f -s 4 ${filenames[$INDEX_AT]}_smooth4mm.nii.gz
+            ;;
+        smooth5)
+            fslmaths $f -s 5 ${filenames[$INDEX_AT]}_smooth5mm.nii.gz
+            ;;
         # stats)
         #     # Stats
         #     fslstats $f
