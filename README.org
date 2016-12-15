@@ -67,5 +67,9 @@ Pick one that suits you:
 
 * Thanks
 -----
-The awesome FSL.
+The awesome [[https://fsl.fmrib.ox.ac.uk/fsl/fslwiki][FSL]].
 The poweful BASH.
+
+* Disclaimer
+
+This tool is not a part of FSL. Use at your own risk.
