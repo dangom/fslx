@@ -1,8 +1,8 @@
-#+TITLE: FSLX
+#+TITLE: fslx
 #+AUTHOR: Daniel Gomez
 #+DATE: 14.12.2016
 
-FSLX is a *dumb* wrapper around some of fsltools. It exists so I don't have to
+/fslx/ is a *dumb* wrapper around some of fsltools. It exists so I don't have to
 remember the arbitrary names of fsl tools, nor the parameter naming
 conventions of each of them.
 There are probably thousands of tools like this one out there, but they weren't on
