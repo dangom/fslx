@@ -3,7 +3,7 @@
 #+DATE: 14.12.2016
 
 FSLX is a *dumb* wrapper around some of fsltools. It exists so I don't have to
-remember the arbitrary names of fsl tools, nor the inconsistent parameter naming
+remember the arbitrary names of fsl tools, nor the parameter naming
 conventions of each of them.
 There are probably thousands of tools like this one out there, but they weren't on
 my search engine's top 3, so I had to write my own.
@@ -60,9 +60,9 @@ Put fslx on your PATH.
 -----
 Pick one that suits you:
 
-Nipype takes too many lines of code and I have a PhD to finish.
-The lack of sleep makes me forget fsl commands, and the Wiki doesn't see much loving.
-FSL has decent defaults and 99% of the times I don't need to customize anything.
+- Nipype takes too many lines of code and I have a PhD to finish.
+- The lack of sleep makes me forget fsl commands, and the Wiki doesn't see much loving.
+- FSL has decent defaults and 99% of the times I don't need to customize anything.
 
 
 * Thanks
