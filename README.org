@@ -46,6 +46,8 @@ As of yet, FSLX supports the following:
 | merge or tmerge            | Merge 2D -> or 3D -> 4D             | yes      | fslmerge               |
 | split or tsplit            | Split 4D image into multiple 3D     | no yet   | fslsplit               |
 | align or register or reg   | Align image to reference            | yes      | flirt                  |
+| lthresh or lthr            | Low threshold: usage fslx lthr 10   | yes      | fslmaths -thr          |
+| uthresh or uthr            | Upper threshold: usage fslx uthr 5  | yes      | fslmaths -uthr         |
 | smooth2 , 3 , 4 , 5        | Smooth image with a 2,3,4,5 kernel  | yes      | fslmaths -s            |
 | hpass100,200,500,1000,2000 | Highpass filter with sigma=N        | yes      | fslmaths -bptf N -1    |
 | nan or nans                | image(image==nan) = 0               | yes      | fslmaths -nan          |
