@@ -20,10 +20,15 @@ Exceptions to the rule are simple to remember though, such as in the case of rea
 #+BEGIN_SRC bash
 fslx reg reference img1 img2 img3
 #+END_SRC
-And in the case of merging files, where FSLX does exactly what you would expect.
+
+Another exception is merging files, where fslx does exactly what you would
+expect - it merges all inputs.
+#+BEGIN_SRC bash
+fslx merge img1 img2 img3
+#+END_SRC
 
 
-To make things even dummer, operations have alias so that you can type synonyms
+To make things even dumber, operations have alias so that you can type synonyms
 and things just work. Alignment, for example, can be called with any of ~reg|align|register~.
 
 ** Supported operations
@@ -65,7 +70,11 @@ ls | xflsx moco | xfslx tsnr | xfslx nan
 #+END_SRC
 And then call the pipe with less verbosity.
 
-Note: you get all of your intermediate results, so much sure you have enough disk space.
+Note: you get all of your intermediate results, so much sure you have enough
+disk space. If you don't want to store intermediate results, you can probably
+write a list of intermediates to a file (using, e.g., ~tee~) and ~rm~ then
+when all processing is done successfully.
+
 
 ** Installation
 Put fslx on your PATH.
