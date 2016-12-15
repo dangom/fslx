@@ -102,6 +102,7 @@ echo 'export "PATH='$currdir'/fslx/:$PATH"' >> ~/.bashrc
 - Support for Melodic ICA.
 - Add support for dual_regression
 - Add support for mixture modelling.
+- Support for pipe filtering: fslx moco | xfslx when TR smaller than 2 | xfslx highpass
 - Read from STDIN?
 - Be cleverer wrt output directories?
 
