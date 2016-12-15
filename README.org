@@ -60,8 +60,12 @@ Coming soon, hopefully: stats, temporal filtering, segmentation with FAST, ICA, 
 
 ** Piping commands
 You can use xargs to build a nice easy processing pipeline. Most operations are supported.
-Example - motion correct, compute the tSNR, and remove NaNs of all 4D niftis in a directory:
-~ls | xargs flsx moco | xargs fslx tsnr | xargs fslx nan~
+Example - motion correct, compute the tSNR, and remove NaNs of all 4D niftis in
+a directory:
+#+BEGIN_SRC bash
+ls | xargs flsx moco | xargs fslx tsnr | xargs fslx nan
+#+END_SRC
+
 
 For maximum efficiency, you can alias ~xargs fslx~:
 #+BEGIN_SRC bash
@@ -70,7 +74,7 @@ ls | xflsx moco | xfslx tsnr | xfslx nan
 #+END_SRC
 And then call the pipe with less verbosity.
 
-Note: you get all of your intermediate results, so much sure you have enough
+Note: you get all of your intermediate results, so make sure you have enough
 disk space. If you don't want to store intermediate results, you can probably
 write a list of intermediates to a file (using, e.g., ~tee~) and ~rm~ then
 when all processing is done successfully.
