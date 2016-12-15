@@ -172,30 +172,30 @@ do
         lowpass|lowfilter|lfilter|lfilt)
             #  Apply lowpass temporal filter.
             ;;
-        highpass100|highfilter100|hfilter100|hfilt100)
+        highpass100|highfilter100|hfilter100|hfilt100|hpass100)
             # Apply highpass temporal filter  with cutoff 100s.
-            fslmaths $f -bptf 100 -1 ${filenames[$INDEX_AT]}_hfilt100.nii.gz
-            echo ${filenames[$INDEX_AT]}_hfilt100.nii.gz
+            fslmaths $f -bptf 100 -1 ${filenames[$INDEX_AT]}_hpass100.nii.gz
+            echo ${filenames[$INDEX_AT]}_hpass100.nii.gz
             ;;
-        highpass200|highfilter200|hfilter200|hfilt200)
+        highpass200|highfilter200|hfilter200|hfilt200|hpass200)
             # Apply highpass temporal filter  with cutoff 200s.
-            fslmaths $f -bptf 200 -1 ${filenames[$INDEX_AT]}_hfilt200.nii.gz
-            echo ${filenames[$INDEX_AT]}_hfilt200.nii.gz
+            fslmaths $f -bptf 200 -1 ${filenames[$INDEX_AT]}_hpass200.nii.gz
+            echo ${filenames[$INDEX_AT]}_hpass200.nii.gz
             ;;
-        highpass500|highfilter500|hfilter500|hfilt500)
+        highpass500|highfilter500|hfilter500|hfilt500|hpass500)
             # Apply highpass temporal filter with cutoff 500s.
-            fslmaths $f -bptf 500 -1 ${filenames[$INDEX_AT]}_hfilt500.nii.gz
-            echo ${filenames[$INDEX_AT]}_hfilt500.nii.gz
+            fslmaths $f -bptf 500 -1 ${filenames[$INDEX_AT]}_hpass500.nii.gz
+            echo ${filenames[$INDEX_AT]}_hpass500.nii.gz
             ;;
-        highpass1000|highfilter1000|hfilter1000|hfilt1000)
+        highpass1000|highfilter1000|hfilter1000|hfilt1000|hpass1000)
             # Apply highpass temporal filter with cutoff 1000s.
-            fslmaths $f -bptf 1000 -1 ${filenames[$INDEX_AT]}_hfilt1000.nii.gz
-            echo ${filenames[$INDEX_AT]}_hfilt1000.nii.gz
+            fslmaths $f -bptf 1000 -1 ${filenames[$INDEX_AT]}_hpass1000.nii.gz
+            echo ${filenames[$INDEX_AT]}_hpass1000.nii.gz
             ;;
-        highpass2000|highfilter2000|hfilter2000|hfilt2000)
+        highpass2000|highfilter2000|hfilter2000|hfilt2000|hpass2000)
             # Apply highpass temporal filter with cutoff 2000s.
-            fslmaths $f -bptf 2000 -1 ${filenames[$INDEX_AT]}_hfilt2000.nii.gz
-            echo ${filenames[$INDEX_AT]}_hfilt2000.nii.gz
+            fslmaths $f -bptf 2000 -1 ${filenames[$INDEX_AT]}_hpass2000.nii.gz
+            echo ${filenames[$INDEX_AT]}_hpass2000.nii.gz
             ;;
         smooth2)
             # Smooth with a kernel of 2mm.
