@@ -73,11 +73,12 @@ ls | xflsx moco | xfslx tsnr | xfslx nan | xfslx reg brain > list_of_processed_f
 #+END_SRC
 And then call the pipe with less verbosity.
 
-Note: you get all of your intermediate results, so much sure you have enough
+Note: you get all of your intermediate results, so make sure you have enough
 disk space. If you don't want to store intermediate results, you can probably
 write a list of intermediates to a file (using, e.g., ~tee~) and ~rm~ then
 when all processing is done successfully.
 
+Note2: fslx is so dumb it doesn't accept relative directories, yet.
 
 ** Installation
 Put fslx on your PATH.
@@ -94,12 +95,14 @@ echo 'export "PATH='$currdir'/fslx/:$PATH"' >> ~/.bashrc
 - A Unix like environment with a sane shell available (Linux / MacOS).
 
 ** TO DO
+- *PRIORITY*: Support relative filenames.
 - Support for applyxfm, registration to MNI, concatenate transformation matrices.
 - FAST segmentation
 - Support for Melodic ICA.
 - Add support for dual_regression
 - Add support for mixture modelling.
 - Read from STDIN?
+- Be cleverer wrt output directories?
 
 ** Why?
 Pick one that suits you:
@@ -107,6 +110,7 @@ Pick one that suits you:
 - Nipype takes too many lines of code and I have a PhD to finish.
 - The lack of sleep makes me forget fsl commands, and the Wiki doesn't see much loving.
 - FSL has decent defaults and 99% of the times I don't need to customize anything.
+- Gee, what the hell happened to my data?
 
 
 * Thanks
