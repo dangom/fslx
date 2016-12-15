@@ -41,6 +41,7 @@ As of yet, FSLX supports the following:
 | tstd                     | Compute temporal std                | yes      | fslmaths -Tstd         |
 | tsnr                     | Compute temporal tsnr               | yes      | fslmaths mean -div std |
 | moco or mc               | Motion correction                   | yes      | mcflirt                |
+| view or v                | Open files in viewer, pipes through | yes      | fslview                |
 | brain or rmskull or bet  | Remove skull                        | yes      | bet                    |
 | merge or tmerge          | Merge 2D -> or 3D -> 4D             | yes      | fslmerge               |
 | split or tsplit          | Split 4D image into multiple 3D     | no yet   | fslsplit               |
@@ -73,7 +74,14 @@ ls | xflsx moco | xfslx tsnr | xfslx nan | xfslx reg brain > list_of_processed_f
 #+END_SRC
 And then call the pipe with less verbosity.
 
-Note: you get all of your intermediate results, so make sure you have enough
+To see intermediate results, simply add a call to the viewer in the middle of your pipe:
+#+BEGIN_SRC bash
+alias xfslx='xargs fslx '
+ls | xflsx moco | xfslx tsnr | xfslx nan | xfslx v |xfslx reg brain > list_of_processed_files.txt
+#+END_SRC
+
+
+Note: you get /all/ of your intermediate results, so make sure you have enough
 disk space. If you don't want to store intermediate results, you can probably
 write a list of intermediates to a file (using, e.g., ~tee~) and ~rm~ then
 when all processing is done successfully.

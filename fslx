@@ -170,7 +170,7 @@ do
             # Apply bandpass temporal filter
             ;;
         lowpass|lowfilter|lfilter|lfilt)
-            # Apply lowpass temporal filter.
+            #  Apply lowpass temporal filter.
             ;;
         highpass|highfilter|hfilter|hfilt)
             # Apply highpass temporal filter.
@@ -195,6 +195,10 @@ do
         #     # Stats
         #     fslstats $f
         #     ;;
+        v|view)
+            fslview `echo ${filenames[@]}`
+            echo ${filenames[@]}
+            ;;
         *)
             echo "Operation not implemented yet."
             break
