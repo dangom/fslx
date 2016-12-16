@@ -39,7 +39,8 @@ function echo_help {
     echo "Compute mean image: fslx mean img1 img2"
     echo ""
     echo "Currently supported operations: moco|mc tmean tstd tsnr abs recip bin nan sin exp rmskull"
-    echo "Currently supported filtering operations: smooth2,3,4,5 hpass100,200,500,1000,2000"
+    echo "Thresholding lowthresh and highthresh. Syntax: fslx lowthresh number img1 img2"
+    echo "Filtering operations: smooth2,3,4,5 hpass100,200,500,1000,2000"
     echo "Query operations (not pipeable): nvols info header|hd (stats not implemented yet)."
     echo "Temporal split and merge operations (not pipeable currently): split merge"
     echo "Linear registration:"
@@ -51,7 +52,8 @@ function echo_help {
     echo "Oh, and before I forget:"
     echo "Viewer operations: view or v (pipes inputs through)"
     echo ""
-    echo "That is the reason why I love nipype. Not."
+    echo "That i
+s the reason why I love nipype. Not."
     echo ""
     echo "Disclaimer: use at your own risk."
     echo "Disclaimer 2: no, I don't plan to implement reading from STDIN, so just use xargs."
@@ -109,19 +111,19 @@ do
             fslmaths $f -exp ${filenames[$INDEX_AT]}_exp.nii.gz
             echo ${filenames[$INDEX_AT]}_exp.nii.gz
             ;;
-        lthresh|lthr)
-            # Compute e**image, voxelwise.
+        lthresh|lthr|lowthresh)
+            # Compute lower threshold
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                outname=${filenames[$j]}_lthresh$f.nii.gz
+                outname=${filenames[$j]}_lthresh${f/./_}.nii.gz
                 fslmaths ${inputs[j]} -thr $f $outname > /dev/null
                 echo $outname
             done
             break
             ;;
-        uthresh|uthr|hthresh|hthr)
+        uthresh|uthr|hthresh|hthr|highthresh)
             # Compute e**image, voxelwise.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                outname=${filenames[$j]}_uthresh$f.nii.gz
+                outname=${filenames[$j]}_uthresh${f/./_}.nii.gz
                 fslmaths ${inputs[j]} -uthr $f $outname > /dev/null
                 echo $outname
             done
