@@ -40,7 +40,7 @@ function echo_help {
     echo ""
     echo "Currently supported operations: moco|mc tmean tstd tsnr abs recip bin nan sin exp rmskull"
     echo "Thresholding lowthresh and highthresh. Syntax: fslx lowthresh number img1 img2"
-    echo "Filtering operations: smooth2,3,4,5 hpass100,200,500,1000,2000"
+    echo "Filtering operations: smooth number,  highpass number,  lowpass number"
     echo "Query operations (not pipeable): nvols info header|hd (stats not implemented yet)."
     echo "Temporal split and merge operations (not pipeable currently): split merge"
     echo "Linear registration:"
@@ -52,8 +52,7 @@ function echo_help {
     echo "Oh, and before I forget:"
     echo "Viewer operations: view or v (pipes inputs through)"
     echo ""
-    echo "That i
-s the reason why I love nipype. Not."
+    echo "That is the reason why I love nipype. Not."
     echo ""
     echo "Disclaimer: use at your own risk."
     echo "Disclaimer 2: no, I don't plan to implement reading from STDIN, so just use xargs."
@@ -199,47 +198,33 @@ do
             ;;
         lowpass|lowfilter|lfilter|lfilt)
             #  Apply lowpass temporal filter.
+            # Apply highpass temporal filter with cutoff from 2nd input.
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${filenames[$j]}_lowpass${f/./_}.nii.gz
+                fslmaths ${inputs[j]} -btpf -1 $f $outname > /dev/null
+                echo $outname
+            done
+            break
             ;;
-        highpass100|highfilter100|hfilter100|hfilt100|hpass100)
-            # Apply highpass temporal filter  with cutoff 100s.
-            fslmaths $f -bptf 100 -1 ${filenames[$INDEX_AT]}_hpass100.nii.gz
-            echo ${filenames[$INDEX_AT]}_hpass100.nii.gz
+
             ;;
-        highpass200|highfilter200|hfilter200|hfilt200|hpass200)
-            # Apply highpass temporal filter  with cutoff 200s.
-            fslmaths $f -bptf 200 -1 ${filenames[$INDEX_AT]}_hpass200.nii.gz
-            echo ${filenames[$INDEX_AT]}_hpass200.nii.gz
+        highpass|highfilter|hfilter|hfilt|hpass)
+            # Apply highpass temporal filter with cutoff from 2nd input.
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${filenames[$j]}_highpass${f/./_}.nii.gz
+                fslmaths ${inputs[j]} -btpf $f -1 $outname > /dev/null
+                echo $outname
+            done
+            break
             ;;
-        highpass500|highfilter500|hfilter500|hfilt500|hpass500)
-            # Apply highpass temporal filter with cutoff 500s.
-            fslmaths $f -bptf 500 -1 ${filenames[$INDEX_AT]}_hpass500.nii.gz
-            echo ${filenames[$INDEX_AT]}_hpass500.nii.gz
-            ;;
-        highpass1000|highfilter1000|hfilter1000|hfilt1000|hpass1000)
-            # Apply highpass temporal filter with cutoff 1000s.
-            fslmaths $f -bptf 1000 -1 ${filenames[$INDEX_AT]}_hpass1000.nii.gz
-            echo ${filenames[$INDEX_AT]}_hpass1000.nii.gz
-            ;;
-        highpass2000|highfilter2000|hfilter2000|hfilt2000|hpass2000)
-            # Apply highpass temporal filter with cutoff 2000s.
-            fslmaths $f -bptf 2000 -1 ${filenames[$INDEX_AT]}_hpass2000.nii.gz
-            echo ${filenames[$INDEX_AT]}_hpass2000.nii.gz
-            ;;
-        smooth2)
+        smooth|sm|gauss)
             # Smooth with a kernel of 2mm.
-            fslmaths $f -s 2 ${filenames[$INDEX_AT]}_smooth2mm.nii.gz
-            ;;
-        smooth3)
-            # Smooth with a kernel of 3mm.
-            fslmaths $f -s 3 ${filenames[$INDEX_AT]}_smooth3mm.nii.gz
-            ;;
-        smooth4)
-            # Smooth with a kernel of 4mm.
-            fslmaths $f -s 4 ${filenames[$INDEX_AT]}_smooth4mm.nii.gz
-            ;;
-        smooth5)
-            # Smooth with a kernel of 5mm.
-            fslmaths $f -s 5 ${filenames[$INDEX_AT]}_smooth5mm.nii.gz
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${filenames[$j]}_smooth${f/./_}.nii.gz
+                fslmaths ${inputs[j]} -s $f $outname > /dev/null
+                echo $outname
+            done
+            break
             ;;
         # stats)
         #     # Stats
