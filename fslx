@@ -206,8 +206,6 @@ do
             done
             break
             ;;
-
-            ;;
         highpass|highfilter|hfilter|hfilt|hpass)
             # Apply highpass temporal filter with cutoff from 2nd input.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
