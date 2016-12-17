@@ -231,6 +231,7 @@ do
         v|view)
             fslview `echo ${filenames[@]}`
             echo ${filenames[@]}
+            break
             ;;
         *)
             echo "Operation not implemented yet."
