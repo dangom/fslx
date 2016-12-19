@@ -41,6 +41,7 @@ As of yet, FSLX supports the following:
 | tstd                     | Compute temporal std                 | yes      | fslmaths -Tstd         |
 | tsnr                     | Compute temporal tsnr                | yes      | fslmaths mean -div std |
 | moco or mc               | Motion correction                    | yes      | mcflirt                |
+| ica or melodic           | ICA of all inputs. Pipes IC maps     | yes      | melodic -i             |
 | view or v                | Open files in viewer, pipes through  | yes      | fslview                |
 | brain or rmskull or bet  | Remove skull                         | yes      | bet                    |
 | merge or tmerge          | Merge 2D -> or 3D -> 4D              | yes      | fslmerge               |
@@ -61,7 +62,10 @@ As of yet, FSLX supports the following:
 | nvols                    | Query number of volumes in image     | no       | fslnvols               |
 | info                     | Query info, e.g., image dimensions   | no       | fslinfo                |
 
-Coming soon, hopefully: stats, temporal filtering, segmentation with FAST, ICA, smart registration to MNI152.
+Coming soon, hopefully: stats, segmentation with FAST, smart registration to MNI152.
+
+Notes: output ICs from Melodic will be renamed to be consistent with fslx conventions. The Melodic report folder
+will also be saved, and the mask.nii.gz and mean.nii.gz will be placed inside of it.
 
 ** Piping commands
 You can use xargs to build a nice easy processing pipeline. Most operations are
@@ -122,7 +126,6 @@ echo 'export "PATH='$currdir'/fslx/:$PATH"' >> ~/.bashrc
 - *PRIORITY*: Support relative filenames.
 - Support for applyxfm, registration to MNI, concatenate transformation matrices.
 - FAST segmentation
-- Support for Melodic ICA.
 - Add support for dual_regression
 - Add support for mixture modelling.
 - Support for pipe filtering: fslx moco | xfslx when TR smaller than 2 | xfslx highpass

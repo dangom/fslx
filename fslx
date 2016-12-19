@@ -46,6 +46,7 @@ function echo_help {
     echo "Linear registration:"
     echo "fslx align reference img1 img2"
     echo ""
+    echo "Melodic ICA: fslx ica img1 img2"
     echo "Because it accepts multiple images, you can do cool stuff like for example:"
     echo "ls | xargs fslx moco | xargs fslx tsnr | xargs fslx nan > list_of_processed_files.txt"
     echo "And get the tsnr (nans converted to 0s ) for all your motion corrected files - and a list of them."
@@ -270,6 +271,7 @@ do
             outname=${namesansextension}_IC.nii.gz
             mv ${icadir}/melodic_IC.nii.gz $outname
             mv ${icadir}/report ${currdir}/${currfile}_IC_reports
+            mv ${icadir}/mean.nii.gz ${icadir}/mask.nii.gz ${currdir}/${currfile}_IC_reports
             rm -rf $icadir
             ;;
         # stats)
