@@ -266,7 +266,7 @@ do
             ;;
         melodic|ica|pica)
             melodic -i $f --report
-            currdir=`dirname $f`; currfile=`basename $f`
+            currdir=`dirname $f`; currfile=`basename $f`; currfile="${currfile%%.*}"
             icadir=${currdir}/${currfile}.ica
             outname=${namesansextension}_IC.nii.gz
             mv ${icadir}/melodic_IC.nii.gz $outname
