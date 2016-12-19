@@ -73,6 +73,7 @@ operation=$1
 # We also define filenames, which are the inputs without file extensions.
 for (( i=2 ; i<=$# ; i++ )) ; do
     currfile=`echo ${!i}`
+    currfile=`readlink -f $currfile` # This adds support for relative input paths.
     inputs[$i-2]=$currfile
     filenames[$i-2]="${currfile%%.*}"
 done
