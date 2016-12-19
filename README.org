@@ -95,6 +95,13 @@ ls | xfslx moco | tee mocoed.txt | xfslx tsnr >/dev/null; cat mocoed.txt | xargs
 #+END_SRC
 
 Note2: fslx is so dumb it doesn't allow configuring output directories yet.
+Therefore, as a workaround you can use ~xargs~ and ~mv~ to output files to wherever you want:
+
+#+BEGIN_SRC bash
+ls | xfslx moco | tee mocoed.txt | xfslx tnsr | tee tsnred.txt
+xargs -a mocoed.txt mv -t /path/where/mocoed/files/should/go
+xargs -a tsnred.txt mv -t /path/where/tsnred/files/should/go
+#+END_SRC
 
 ** Installation
 Put fslx on your PATH.
