@@ -44,6 +44,7 @@ As of yet, FSLX supports the following:
 | view or v                | Open files in viewer, pipes through  | yes      | fslview                |
 | brain or rmskull or bet  | Remove skull                         | yes      | bet                    |
 | merge or tmerge          | Merge 2D -> or 3D -> 4D              | yes      | fslmerge               |
+| echocombine of mecombine | Merge echoes by averaging            | yes      | fslmaths -add & -div   |
 | split or tsplit          | Split 4D image into multiple 3D      | no yet   | fslsplit               |
 | align or register or reg | Align image to reference             | yes      | flirt                  |
 | lthresh or lthr          | Low threshold, usage: fslx lthr 10   | yes      | fslmaths -thr          |

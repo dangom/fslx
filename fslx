@@ -105,6 +105,23 @@ do
             rm ${filenames[$INDEX_AT]}_mean_deleteme.nii.gz ${filenames[$INDEX_AT]}_std_deleteme.nii.gz
             echo ${filenames[$INDEX_AT]}_tsnr.nii.gz
             ;;
+        echocombine|combineechoes|combinechoes|catechoes|catme|mecombine|mecat)
+            # Merge all echoes by simple addition
+            # Number of echoes =
+            nechoes=${#inputs[@]}
+            x=$f
+            tmpname=${filenames[0]}_tmp_deleteme.nii.gz
+            outname=${filenames[0]}_echoescombined.nii.gz
+            for (( j=1; j<${#inputs[@]}; j++ )) ; do
+                # Add an input and overwrite tmpname
+                fslmaths $x -add ${inputs[j]} $tmpname > /dev/null
+            done
+            # Divide ny the total number of echoes
+            fslmaths $tmpname -div $nechoes $tmpname
+            mv $tmpname $outname
+            echo $outname
+            break # Break out of the loop, since we looped here.
+            ;;
         exp)
             # Compute e**image, voxelwise.
             fslmaths $f -exp ${filenames[$INDEX_AT]}_exp.nii.gz
