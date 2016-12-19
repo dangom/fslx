@@ -55,7 +55,6 @@ function echo_help {
     echo "That is the reason why I love nipype. Not."
     echo ""
     echo "Disclaimer: use at your own risk."
-    echo "Disclaimer 2: no, I don't plan to implement reading from STDIN, so just use xargs."
     echo ""
     echo "Written by Daniel Gomez"
 }
@@ -71,8 +70,22 @@ operation=$1
 
 # We define an array called inputs, which contains all files to process.
 # We also define filenames, which are the inputs without file extensions.
-# Start at 2 means: skip $0 and $1 (the operation)
-for (( i=2 ; i<=$# ; i++ )) ; do
+
+
+# The second input may well be a number, in which case we have to check for it.
+re='^[0-9]+([.][0-9]+)?$'
+if [[ $2 =~ $re ]] ; then
+    inputs[0]=`echo $2`
+    filenames[0]=`echo $2`
+else
+    inputs[0]=`readlink -f $2`
+    currfile=${inputs[0]}
+    filenames[0]="${currfile%%.*}"
+fi
+
+
+# Start at 2 means: skip $0, $1 (the operation) and $2 (a possible number)
+for (( i=3 ; i<=$# ; i++ )) ; do
     currfile=`echo ${!i}`
     currfile=`readlink -f $currfile` # This adds support for relative input paths.
     inputs[$i-2]=$currfile
@@ -223,7 +236,7 @@ do
             # Apply highpass temporal filter with cutoff from 2nd input.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${filenames[$j]}_lowpass${f/./_}.nii.gz
-                fslmaths ${inputs[j]} -btpf -1 $f $outname > /dev/null
+                fslmaths ${inputs[j]} -bptf -1 $f $outname > /dev/null
                 echo $outname
             done
             break
@@ -232,7 +245,7 @@ do
             # Apply highpass temporal filter with cutoff from 2nd input.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${filenames[$j]}_highpass${f/./_}.nii.gz
-                fslmaths ${inputs[j]} -btpf $f -1 $outname > /dev/null
+                fslmaths ${inputs[j]} -bptf $f -1 $outname > /dev/null
                 echo $outname
             done
             break
@@ -245,6 +258,19 @@ do
                 echo $outname
             done
             break
+            ;;
+        groupica)
+            echo "Operation not implemented yet."
+            break
+            ;;
+        melodic|ica|pica)
+            melodic -i $f --report
+            currdir=`dirname $f`; currfile=`basename $f`
+            icadir=${currdir}/${currfile}.ica
+            outname=${namesansextension}_IC.nii.gz
+            mv ${icadir}/melodic_IC.nii.gz $outname
+            mv ${icadir}/report ${currdir}/${currfile}_IC_reports
+            rm -rf $icadir
             ;;
         # stats)
         #     # Stats
