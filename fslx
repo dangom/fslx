@@ -29,7 +29,6 @@
 # TODO: Support for applyxfm, registration to MNI, concatenate transformation matrices.
 # TODO: Read from STDIN?
 # TODO: FAST segmentation
-# TODO: Support for Melodic ICA.
 # TODO: Add support for dual_regression
 # TODO: Add support for mixture modelling.
 
@@ -269,10 +268,11 @@ do
             currdir=`dirname $f`; currfile=`basename $f`; currfile="${currfile%%.*}"
             icadir=${currdir}/${currfile}.ica
             outname=${namesansextension}_IC.nii.gz
-            mv ${icadir}/melodic_IC.nii.gz $outname
-            mv ${icadir}/report ${currdir}/${currfile}_IC_reports
-            mv ${icadir}/mean.nii.gz ${icadir}/mask.nii.gz ${currdir}/${currfile}_IC_reports
-            rm -rf $icadir
+            cp ${icadir}/melodic_IC.nii.gz $outname
+            mv ${icadir} ${currdir}/${currfile}_ICAdir
+            # mv ${icadir}/report ${currdir}/${currfile}_IC_reports
+            # mv ${icadir}/mean.nii.gz ${icadir}/mask.nii.gz ${currdir}/${currfile}_IC_reports
+            # rm -rf $icadir
             ;;
         # stats)
         #     # Stats

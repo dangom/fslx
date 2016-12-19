@@ -64,8 +64,10 @@ As of yet, FSLX supports the following:
 
 Coming soon, hopefully: stats, segmentation with FAST, smart registration to MNI152.
 
-Notes: output ICs from Melodic will be renamed to be consistent with fslx conventions. The Melodic report folder
-will also be saved, and the mask.nii.gz and mean.nii.gz will be placed inside of it.
+Notes: output ICs from Melodic will be copied to local folder to be consistent with fslx
+conventions. Moreover, the Melodic output folder will be renamed but the contents will not be changed.
+I consider this to be a good middle ground between usability and compatibility with other tools that
+expect a Melodic directory as input, such as ICA-AROMA.
 
 ** Piping commands
 You can use xargs to build a nice easy processing pipeline. Most operations are
