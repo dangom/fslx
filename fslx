@@ -71,6 +71,7 @@ operation=$1
 
 # We define an array called inputs, which contains all files to process.
 # We also define filenames, which are the inputs without file extensions.
+# Start at 2 means: skip $0 and $1 (the operation)
 for (( i=2 ; i<=$# ; i++ )) ; do
     currfile=`echo ${!i}`
     currfile=`readlink -f $currfile` # This adds support for relative input paths.

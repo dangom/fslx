@@ -81,16 +81,20 @@ And then call the pipe with less verbosity.
 To see intermediate results, simply add a call to the viewer in the middle of your pipe:
 #+BEGIN_SRC bash
 alias xfslx='xargs fslx '
-ls | xflsx moco | xfslx tsnr | xfslx nan | xfslx v |xfslx reg T1w > list_of_processed_files.txt
+ls | xfslx moco | xfslx tsnr | xfslx nan | xfslx v |xfslx reg T1w > list_of_processed_files.txt
 #+END_SRC
 
 
 Note: you get /all/ of your intermediate results, so make sure you have enough
 disk space. If you don't want to store intermediate results, you can probably
 write a list of intermediates to a file (using, e.g., ~tee~) and ~rm~ then
-when all processing is done successfully.
+when all processing is done successfully, example:
 
-Note2: fslx is so dumb it doesn't accept relative directories, yet.
+#+BEGIN_SRC bash
+ls | xfslx moco | tee mocoed.txt | xfslx tsnr >/dev/null; cat mocoed.txt | xargs rm
+#+END_SRC
+
+Note2: fslx is so dumb it doesn't allow configuring output directories yet.
 
 ** Installation
 Put fslx on your PATH.
