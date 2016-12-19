@@ -104,6 +104,7 @@ echo 'export "PATH='$currdir'/fslx/:$PATH"' >> ~/.bashrc
 ** Dependencies
 - FSL
 - A Unix like environment with a sane shell available (Linux / MacOS).
+- GNU Realink (for macOS: =brew install coreutils=). Will remove dependency eventually.
 
 ** TO DO
 - *PRIORITY*: Support relative filenames.
