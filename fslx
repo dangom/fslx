@@ -86,24 +86,27 @@ done
 INDEX_AT=0
 for f in ${inputs[@]}
 do
+    # We need the name without extension to add a suffix according to the operation performed.
+    namesansextension=${filenames[$INDEX_AT]}
+
     case $operation in
-        tmean)
+        tmean|Tmean)
             # Compute the temporal mean of the image in time. Reduces a 4D to a 3D volume.
-            fslmaths $f -Tmean ${filenames[$INDEX_AT]}_mean.nii.gz
-            echo ${filenames[$INDEX_AT]}_mean.nii.gz
+            outname=${namesansextension}_tmean.nii.gz
+            fslmaths $f -Tmean $outname; echo $outname
             ;;
-        tstd)
+        tstd|Tstd)
             # Compute the standard deviation of the image in time. Reduces a 4D to a 3D volume.
-            fslmaths $f -Tstd ${filenames[$INDEX_AT]}_std.nii.gz
-            echo ${filenames[$INDEX_AT]}_std.nii.gz
+            outname=${namesansextension}_tmean.nii.gz
+            fslmaths $f -Tstd $outname; echo $outname
             ;;
         tsnr)
             # Compute the ratio of the mean and standard deviation of the image (in time). Reduces a 4D to a 3D volume.
-            fslmaths $f -Tmean ${filenames[$INDEX_AT]}_mean_deleteme.nii.gz
-            fslmaths $f -Tstd ${filenames[$INDEX_AT]}_std_deleteme.nii.gz
-            fslmaths ${filenames[$INDEX_AT]}_mean_deleteme.nii.gz -div ${filenames[$INDEX_AT]}_std_deleteme.nii.gz ${filenames[$INDEX_AT]}_tsnr.nii.gz
-            rm ${filenames[$INDEX_AT]}_mean_deleteme.nii.gz ${filenames[$INDEX_AT]}_std_deleteme.nii.gz
-            echo ${filenames[$INDEX_AT]}_tsnr.nii.gz
+            fslmaths $f -Tmean ${namesansextension}_mean_deleteme.nii.gz
+            fslmaths $f -Tstd ${namesansextension}_std_deleteme.nii.gz
+            fslmaths ${namesansextension}_mean_deleteme.nii.gz -div ${namesansextension}_std_deleteme.nii.gz ${namesansextension}_tsnr.nii.gz
+            rm ${namesansextension}_mean_deleteme.nii.gz ${namesansextension}_std_deleteme.nii.gz
+            echo ${namesansextension}_tsnr.nii.gz
             ;;
         echocombine|combineechoes|combinechoes|catechoes|catme|mecombine|mecat)
             # Merge all echoes by simple addition
@@ -124,8 +127,8 @@ do
             ;;
         exp)
             # Compute e**image, voxelwise.
-            fslmaths $f -exp ${filenames[$INDEX_AT]}_exp.nii.gz
-            echo ${filenames[$INDEX_AT]}_exp.nii.gz
+            fslmaths $f -exp ${namesansextension}_exp.nii.gz
+            echo ${namesansextension}_exp.nii.gz
             ;;
         lthresh|lthr|lowthresh)
             # Compute lower threshold
@@ -147,33 +150,33 @@ do
             ;;
         sin)
             # Compute sin(image), voxelwise.
-            fslmaths $f -sin ${filenames[$INDEX_AT]}_sin.nii.gz
-            echo ${filenames[$INDEX_AT]}_sin.nii.gz
+            fslmaths $f -sin ${namesansextension}_sin.nii.gz
+            echo ${namesansextension}_sin.nii.gz
             ;;
         abs|mag|magn)
             # Compute the absolute value of an image, pixelwise.
-            fslmaths $f -abs ${filenames[$INDEX_AT]}_abs.nii.gz
-            echo ${filenames[$INDEX_AT]}_abs.nii.gz
+            fslmaths $f -abs ${namesansextension}_abs.nii.gz
+            echo ${namesansextension}_abs.nii.gz
             ;;
         bin)
             # Create a binary image from the input. Values > 0 are set to 1.
-            fslmaths $f -bin ${filenames[$INDEX_AT]}_bin.nii.gz
-            echo ${filenames[$INDEX_AT]}_bin.nii.gz
+            fslmaths $f -bin ${namesansextension}_bin.nii.gz
+            echo ${namesansextension}_bin.nii.gz
             ;;
         nan|nans)
             # Remove nans.
-            fslmaths $f -nan ${filenames[$INDEX_AT]}_no_nans.nii.gz
-            echo ${filenames[$INDEX_AT]}_no_nans.nii.gz
+            fslmaths $f -nan ${namesansextension}_no_nans.nii.gz
+            echo ${namesansextension}_no_nans.nii.gz
             ;;
         recip)
             # Compute 1/image, voxelwise.
-            fslmaths $f -recip ${filenames[$INDEX_AT]}_recip.nii.gz
-            echo ${filenames[$INDEX_AT]}_recip.nii.gz
+            fslmaths $f -recip ${namesansextension}_recip.nii.gz
+            echo ${namesansextension}_recip.nii.gz
             ;;
         moco|mc)
             # Motion correction.
-            mcflirt -in $f -out ${filenames[$INDEX_AT]}_mcf.nii.gz
-            echo ${filenames[$INDEX_AT]}_mcf.nii.gz
+            mcflirt -in $f -out ${namesansextension}_mcf.nii.gz
+            echo ${namesansextension}_mcf.nii.gz
             ;;
         header|hd)
             # Read the header.
@@ -181,8 +184,8 @@ do
             ;;
         bet|brain|rmskull)
             # Remove the skull from (ideally) an anatomical image.
-            bet -in $f -out ${filenames[$INDEX_AT]}_noskull.nii.gz
-            echo ${filenames[$INDEX_AT]}_noskull.nii.gz
+            bet -in $f -out ${namesansextension}_noskull.nii.gz
+            echo ${namesansextension}_noskull.nii.gz
             ;;
         split|tsplit)
             # Split a 4d dataset into multiple 3d.
