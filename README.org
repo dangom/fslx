@@ -41,6 +41,7 @@ As of yet, FSLX supports the following:
 | tstd                     | Compute temporal std                 | yes      | fslmaths -Tstd         |
 | tsnr                     | Compute temporal tsnr                | yes      | fslmaths mean -div std |
 | moco or mc               | Motion correction                    | yes      | mcflirt                |
+| mocome                   | Motion correction for multiechoes    | yes      | mcflirt                |
 | ica or melodic           | ICA of all inputs. Pipes IC maps     | yes      | melodic -i             |
 | view or v                | Open files in viewer, pipes through  | yes      | fslview                |
 | brain or rmskull or bet  | Remove skull                         | yes      | bet                    |
@@ -69,6 +70,8 @@ conventions. Moreover, the Melodic output folder will be renamed but the content
 I consider this to be a good middle ground between usability and compatibility with other tools that
 expect a Melodic directory as input, such as ICA-AROMA.
 
+Notes2: Motion correction for multiple echoes applies the transforms obtained by motion correcting the
+first echo on all subsequent echoes.
 ** Piping commands
 You can use xargs to build a nice easy processing pipeline. Most operations are
 supported. Example - motion correct, compute the tSNR, remove NaNs of all 4D
