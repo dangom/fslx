@@ -80,7 +80,12 @@ if [[ $2 =~ $re ]] ; then
 else
     inputs[0]=`readlink -f $2`
     currfile=${inputs[0]}
-    filenames[0]="${currfile%%.*}"
+
+    ## Split between directory and basename
+    basedir=`readlink -f $(dirname $currfile)`
+    basefile=`basename $currfile`
+
+    inputssansextension[0]="$basedir/${basefile%%.*}"
 fi
 
 
@@ -88,13 +93,18 @@ fi
 for (( i=3 ; i<=$# ; i++ )) ; do
     currfile=`echo ${!i}`
     currfile=`readlink -f $currfile` # This adds support for relative input paths.
-    inputs[$i-2]=$currfile
-    filenames[$i-2]="${currfile%%.*}"
+
+    ## Split between directory and basename
+    basedir=`readlink -f $(dirname $currfile)`
+    basefile=`basename $currfile`
+
+    inputs[$i-2]=$basedir/$basefile
+    inputssansextension[$i-2]="$basedir/${basefile%%.*}"
 done
 
 #echo "You choose operation $operation"
 #echo "The operation will be applied in "
-#echo ${filenames[@]}
+#echo ${inputssansextension[@]}
 
 # I am aware that there is lots of code repetition and that I could easily refactor the following switch, so:
 # TODO: Eliminate obscene amount of repetition.
@@ -102,7 +112,7 @@ INDEX_AT=0
 for f in ${inputs[@]}
 do
     # We need the name without extension to add a suffix according to the operation performed.
-    namesansextension=${filenames[$INDEX_AT]}
+    namesansextension=${inputssansextension[$INDEX_AT]}
 
     case $operation in
         tmean|Tmean)
@@ -123,13 +133,39 @@ do
             rm ${namesansextension}_mean_deleteme.nii.gz ${namesansextension}_std_deleteme.nii.gz
             echo ${namesansextension}_tsnr.nii.gz
             ;;
-        echocombine|combineechoes|combinechoes|catechoes|catme|mecombine|mecat)
+        mocome|mocomultiecho|memoco)
+            # How many volumes?
+            numvols=`fslnvols $f`
+            # Moco the very first input and output the matrices
+            mcflirt -in $f -mats
+            echo ${namesansextension}_mcf.nii.gz
+            # This will generate a folder called
+            matsfolder=${namesansextension}_mcf.mat
+            # Now we need to loop over the remaining files, as usual.
+            for (( j=1; j<${#inputs[@]}; j++ )) ; do
+                fslsplit ${inputs[j]} ${inputssansextension[$j]}_mcf_deleteme -t
+                # And loop over the split files, mocoing each of them
+                for (( k=0; k<numvols; k++ )) ; do
+                    mcflirt -in `echo $(printf "${inputssansextension[$j]}_mcf_deleteme%04d.nii.gz " $k)` -init `echo $(printf "${matsfolder}/MAT_%04d " $k)`
+                done
+                # Merge into meaninful mocoed file
+                fslmerge -t ${inputssansextension[$j]}_mcf.nii.gz `echo $(ls ${inputssansextension[$j]}_mcf_deleteme*_mcf.nii.gz)`
+                # Cleanup - no need to  worry about ls directory because inputssansextension contains the whole path.
+                rm -rf `echo $(ls ${inputssansextension[$j]}_mcf_deleteme*.nii.gz)`
+                # Pipe name of processed file down the line.
+                echo ${inputssansextension[$j]}_mcf.nii.gz
+            done
+            # Final cleanup
+            rm -rf $matsfolder
+            break;
+            ;;
+        echocombine|combineechoes|combinechoes|catechoes|catme|mecombine|mecat|combinemultiecho|combineme)
             # Merge all echoes by simple addition
             # Number of echoes =
             nechoes=${#inputs[@]}
             x=$f
-            tmpname=${filenames[0]}_tmp_deleteme.nii.gz
-            outname=${filenames[0]}_echoescombined.nii.gz
+            tmpname=${inputssansextension[0]}_tmp_deleteme.nii.gz
+            outname=${inputssansextension[0]}_echoescombined.nii.gz
             for (( j=1; j<${#inputs[@]}; j++ )) ; do
                 # Add an input and overwrite tmpname
                 fslmaths $x -add ${inputs[j]} $tmpname > /dev/null
@@ -148,7 +184,7 @@ do
         lthresh|lthr|lowthresh)
             # Compute lower threshold
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                outname=${filenames[$j]}_lthresh${f/./_}.nii.gz
+                outname=${inputssansextension[$j]}_lthresh${f/./_}.nii.gz
                 fslmaths ${inputs[j]} -thr $f $outname > /dev/null
                 echo $outname
             done
@@ -157,7 +193,7 @@ do
         uthresh|uthr|hthresh|hthr|highthresh)
             # Compute e**image, voxelwise.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                outname=${filenames[$j]}_uthresh${f/./_}.nii.gz
+                outname=${inputssansextension[$j]}_uthresh${f/./_}.nii.gz
                 fslmaths ${inputs[j]} -uthr $f $outname > /dev/null
                 echo $outname
             done
@@ -208,8 +244,8 @@ do
             ;;
         merge|tmerge)
             # Merge multiple 2d into a 3d, or multiple 3d into a 4d dataset.
-            fslmerge -a ${filenames[0]}_upto_${filenames[-1]}_merged.nii.gz `echo ${filenames[@]}`
-            echo ${filenames[0]}_upto_${filenames[-1]}_merged.nii.gz
+            fslmerge -a ${inputssansextension[0]}_upto_${inputssansextension[-1]}_merged.nii.gz `echo ${inputssansextension[@]}`
+            echo ${inputssansextension[0]}_upto_${inputssansextension[-1]}_merged.nii.gz
             break
             ;;
         nvols)
@@ -222,7 +258,7 @@ do
             ;;
         align|register|reg)
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                outname=${filenames[$j]}_reg_to_$f.nii.gz
+                outname=${inputssansextension[$j]}_reg_to_$f.nii.gz
                 flirt -in ${inputs[j]} -ref $f -out $outname > /dev/null
                 echo $outname
             done
@@ -235,7 +271,7 @@ do
             #  Apply lowpass temporal filter.
             # Apply highpass temporal filter with cutoff from 2nd input.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                outname=${filenames[$j]}_lowpass${f/./_}.nii.gz
+                outname=${inputssansextension[$j]}_lowpass${f/./_}.nii.gz
                 fslmaths ${inputs[j]} -bptf -1 $f $outname > /dev/null
                 echo $outname
             done
@@ -244,7 +280,7 @@ do
         highpass|highfilter|hfilter|hfilt|hpass)
             # Apply highpass temporal filter with cutoff from 2nd input.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                outname=${filenames[$j]}_highpass${f/./_}.nii.gz
+                outname=${inputssansextension[$j]}_highpass${f/./_}.nii.gz
                 fslmaths ${inputs[j]} -bptf $f -1 $outname > /dev/null
                 echo $outname
             done
@@ -253,7 +289,7 @@ do
         smooth|sm|gauss)
             # Smooth with a kernel of 2mm.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                outname=${filenames[$j]}_smooth${f/./_}.nii.gz
+                outname=${inputssansextension[$j]}_smooth${f/./_}.nii.gz
                 fslmaths ${inputs[j]} -s $f $outname > /dev/null
                 echo $outname
             done
@@ -278,9 +314,13 @@ do
         #     # Stats
         #     fslstats $f
         #     ;;
+        testinputs)
+            echo ${inputs[@]}
+            break
+            ;;
         v|view)
-            fslview `echo ${filenames[@]}`
-            echo ${filenames[@]}
+            fslview `echo ${inputssansextension[@]}`
+            echo ${inputssansextension[@]}
             break
             ;;
         *)
