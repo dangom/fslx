@@ -322,7 +322,9 @@ do
                 tr=`fslinfo ${inputs[$j]} | /usr/bin/grep pixdim4 | sed 's/pixdim4        //'`
                 cutoffinsec=$(python -c "from __future__ import division; print('%.2f' % ((1/$tr)*($f/2)))")
                 outname=${inputssansextension[$j]}_lowpass${f/./_}.nii.gz
-                fslmaths ${inputs[$j]} -bptf -1 $cutoffinsec $outname > /dev/null
+                tmpmean=`$0 tmean ${inputs[$j]}`
+                fslmaths ${inputs[$j]} -bptf -1 $cutoffinsec -add $tmpmean $outname > /dev/null
+                imrm $tmpmean
                 echo $outname
             done
             break
@@ -333,7 +335,9 @@ do
                 tr=`fslinfo ${inputs[$j]} | /usr/bin/grep pixdim4 | sed 's/pixdim4        //'`
                 cutoffinsec=$(python -c "from __future__ import division; print('%.2f' % ((1/$tr)*($f/2)))")
                 outname=${inputssansextension[$j]}_highpass${f/./_}.nii.gz
-                fslmaths ${inputs[$j]} -bptf $cutoffinsec -1 $outname > /dev/null
+                tmpmean=`$0 tmean ${inputs[$j]}`
+                fslmaths ${inputs[$j]} -bptf $cutoffinsec -1 -add $tmpmean $outname > /dev/null
+                imrm $tmpmean
                 echo $outname
             done
             break

@@ -73,6 +73,10 @@ expect a Melodic directory as input, such as ICA-AROMA.
 
 Notes2: Motion correction for multiple echoes applies the transforms obtained by motion correcting the
 first echo on all subsequent echoes.
+
+Notes3: Highpass and lowpass filters accept a cutoff parameter in SECONDS. The
+conversion to volumes is done inside of fslx. Filters also add the mean back, so
+the user doesn't have to do it. I feel that is a better default for most use cases.
 ** Piping commands
 You can use xargs to build a nice easy processing pipeline. Most operations are
 supported. Example - motion correct, compute the tSNR, remove NaNs of all 4D
