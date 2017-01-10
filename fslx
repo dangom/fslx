@@ -173,7 +173,7 @@ do
             done
             # Divide ny the total number of echoes
             fslmaths $tmpname -div $nechoes $tmpname
-            /usr/bin/mv $tmpname $outname
+            immv $tmpname $outname
             echo $outname
             break # Break out of the loop, since we looped here.
             ;;
