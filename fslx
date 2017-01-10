@@ -34,7 +34,7 @@
 
 function echo_help {
     echo "Welcome to fslx v0.1!! The *dumbest* wrapper of all times."
-    echo "Fslx requires an operation and one or more inputs:"
+    echo "Fslx requires at least two arguments: an operation and one or more inputs:"
     echo "Compute mean image: fslx mean img1 img2"
     echo ""
     echo "Currently supported operations: moco|mc tmean tstd tsnr abs recip bin nan sin exp rmskull"
@@ -62,6 +62,13 @@ function echo_help {
 if (($# < 1))
 then
     echo_help
+    exit 0
+fi
+
+if (($# < 2))
+then
+    echo "Maybe you forgot to use xargs or used fslx instead of xfslx in a pipe?"
+    echo "In any case, I haven't received enough arguments to run. Please call me again =) Correctly."
     exit 0
 fi
 
@@ -200,6 +207,15 @@ do
             done
             break
             ;;
+        mul|mult|multiply)
+            # Multiply by integer
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${inputssansextension[$j]}_mulby_${f/./_}.nii.gz
+                fslmaths ${inputs[$j]} -mul $f $outname > /dev/null
+                echo $outname
+            done
+            break
+            ;;
         sin)
             # Compute sin(image), voxelwise.
             fslmaths $f -sin ${namesansextension}_sin.nii.gz
@@ -318,11 +334,42 @@ do
             done
             break
             ;;
-        smooth|sm|gauss)
-            # Smooth with a kernel of 2mm.
+        gauss)
+            # Smooth with a Gaussian Kernel.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_smooth${f/./_}.nii.gz
                 fslmaths ${inputs[$j]} -s $f $outname > /dev/null
+                echo $outname
+            done
+            break
+            ;;
+        susan|sue|smooth)
+            # Smooth using FSL Susan, as done in FEAT.
+            # Note that we don't use fslx pipeing facilities here to avoid intermediate files cleanly.
+            fwhm=$(python -c"from __future__ import division; from math import sqrt, log; print($f/(2*sqrt(2*log(2))))")
+            dims=3
+            usemedian=1
+            nusans=1
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${inputssansextension[$j]}_susan${f/./_}.nii.gz
+                meanfunc=`$0 tmean ${inputs[$j]}`
+                meanfuncbet=`$0 betfracmask 0.3 $meanfunc`
+                maskedfunc=`$0 applymask $meanfuncbet $meanfunc`
+                read percentile2 percentile98 <<< `fslstats $maskedfunc -p 2 -p 98`
+                threshold=$(python -c "print($percentile98 - $percentile2)/10.0")
+                premask1=`$0 lowthresh $threshold $maskedfunc`
+                premask2=`$0 tmin $premask1`
+                mask=`$0 bin $premask2`
+                imrm $premask1 $premask2
+                fslmaths $mask $mask -odt char # overwrites
+                median=`fslstats ${inputs[$j]} -k $mask -p 50`
+                fslmaths $mask -dilF $mask # overwrites
+                thresholdedfunc=`$0 applymask $mask ${inputs[$j]}`
+                meanthresholded=`$0 tmean $thresholdedfunc`
+                bt=$(python -c "print($median*0.75)")
+                susan $thresholdedfunc $bt $fwhm $dims $usemedian $nusans $meanthresholded $bt $outname
+                fslmaths $outname -mas $mask $outname # overwrite
+                imrm $meanfunc $meanfuncbet $maskedfunc $mask $thresholdedfunc $meanthresholded ${outname}_usan_size.nii.gz
                 echo $outname
             done
             break
@@ -350,6 +397,10 @@ do
             echo ${inputs[@]}
             break
             ;;
+        testscript)
+            echo $0
+            break
+            ;;
         v|view)
             fslview `echo ${inputssansextension[@]}`
             echo ${inputssansextension[@]}
@@ -367,3 +418,5 @@ done
 
 # In case I decide to write something else later..
 INDEX_AT=
+
+exit 0
