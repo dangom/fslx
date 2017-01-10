@@ -130,7 +130,7 @@ do
             fslmaths $f -Tmean ${namesansextension}_mean_deleteme.nii.gz
             fslmaths $f -Tstd ${namesansextension}_std_deleteme.nii.gz
             fslmaths ${namesansextension}_mean_deleteme.nii.gz -div ${namesansextension}_std_deleteme.nii.gz ${namesansextension}_tsnr.nii.gz
-            rm ${namesansextension}_mean_deleteme.nii.gz ${namesansextension}_std_deleteme.nii.gz
+            imrm ${namesansextension}_mean_deleteme.nii.gz ${namesansextension}_std_deleteme.nii.gz
             echo ${namesansextension}_tsnr.nii.gz
             ;;
         mocome|mocomultiecho|memoco)
@@ -151,12 +151,12 @@ do
                 # Merge into meaninful mocoed file
                 fslmerge -t ${inputssansextension[$j]}_mcf.nii.gz `echo $(ls ${inputssansextension[$j]}_mcf_deleteme*_mcf.nii.gz)`
                 # Cleanup - no need to  worry about ls directory because inputssansextension contains the whole path.
-                rm -rf `echo $(ls ${inputssansextension[$j]}_mcf_deleteme*.nii.gz)`
+                imrm `echo $(ls ${inputssansextension[$j]}_mcf_deleteme*.nii.gz)`
                 # Pipe name of processed file down the line.
                 echo ${inputssansextension[$j]}_mcf.nii.gz
             done
             # Final cleanup
-            rm -rf $matsfolder
+            /usr/bin/rm -rf $matsfolder
             break;
             ;;
         echocombine|combineechoes|combinechoes|catechoes|catme|mecombine|mecat|combinemultiecho|combineme)
@@ -169,10 +169,11 @@ do
             for (( j=1; j<${#inputs[@]}; j++ )) ; do
                 # Add an input and overwrite tmpname
                 fslmaths $x -add ${inputs[j]} $tmpname > /dev/null
+                x=$tmpname
             done
             # Divide ny the total number of echoes
             fslmaths $tmpname -div $nechoes $tmpname
-            mv $tmpname $outname
+            /usr/bin/mv $tmpname $outname
             echo $outname
             break # Break out of the loop, since we looped here.
             ;;
@@ -224,6 +225,13 @@ do
             fslmaths $f -recip ${namesansextension}_recip.nii.gz
             echo ${namesansextension}_recip.nii.gz
             ;;
+        percentile|nthpercentile)
+            #  Get a brain extracted mask from a given threshold f.
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                fslstats -p $f ${inputs[$j]}
+            done
+            break
+            ;;
         moco|mc)
             # Motion correction.
             mcflirt -in $f -out ${namesansextension}_mcf.nii.gz
@@ -235,8 +243,26 @@ do
             ;;
         bet|brain|rmskull)
             # Remove the skull from (ideally) an anatomical image.
-            bet -in $f -out ${namesansextension}_noskull.nii.gz
+            bet2 -in $f -out ${namesansextension}_noskull.nii.gz
             echo ${namesansextension}_noskull.nii.gz
+            ;;
+        betmask|betm|betfracmask)
+            #  Get a brain extracted mask from a given threshold f.
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${inputssansextension[$j]}_bet${f/./_}
+                bet2 ${inputs[$j]} $outname -f $f -n -m
+                echo ${outname}_mask.nii.gz
+            done
+            break
+            ;;
+        applymask|mask)
+            #  Apply a mask on all inputs.
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${inputssansextension[$j]}_maskedwith_${f}.nii.gz
+                fslmaths ${inputs[$j]} -mas $f $outname > /dev/null
+                echo $outname
+            done
+            break
             ;;
         split|tsplit)
             # Split a 4d dataset into multiple 3d.
@@ -272,7 +298,7 @@ do
             # Apply highpass temporal filter with cutoff from 2nd input.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_lowpass${f/./_}.nii.gz
-                fslmaths ${inputs[j]} -bptf -1 $f $outname > /dev/null
+                fslmaths ${inputs[$j]} -bptf -1 $f $outname > /dev/null
                 echo $outname
             done
             break
@@ -281,7 +307,7 @@ do
             # Apply highpass temporal filter with cutoff from 2nd input.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_highpass${f/./_}.nii.gz
-                fslmaths ${inputs[j]} -bptf $f -1 $outname > /dev/null
+                fslmaths ${inputs[$j]} -bptf $f -1 $outname > /dev/null
                 echo $outname
             done
             break
@@ -290,7 +316,7 @@ do
             # Smooth with a kernel of 2mm.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_smooth${f/./_}.nii.gz
-                fslmaths ${inputs[j]} -s $f $outname > /dev/null
+                fslmaths ${inputs[$j]} -s $f $outname > /dev/null
                 echo $outname
             done
             break
@@ -328,7 +354,9 @@ do
             break
             ;;
     esac
+
     ((INDEX_AT=INDEX_AT+1))
+
 done
 
 # In case I decide to write something else later..
