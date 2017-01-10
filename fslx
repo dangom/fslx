@@ -210,6 +210,11 @@ do
             fslmaths $f -abs ${namesansextension}_abs.nii.gz
             echo ${namesansextension}_abs.nii.gz
             ;;
+        min|minimum|tmin)
+            # Compute the absolute value of an image, pixelwise.
+            fslmaths $f -Tmin ${namesansextension}_min.nii.gz
+            echo ${namesansextension}_min.nii.gz
+            ;;
         bin)
             # Create a binary image from the input. Values > 0 are set to 1.
             fslmaths $f -bin ${namesansextension}_bin.nii.gz
@@ -258,7 +263,8 @@ do
         applymask|mask)
             #  Apply a mask on all inputs.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                outname=${inputssansextension[$j]}_maskedwith_${f}.nii.gz
+                f_basename=`basename ${f}`
+                outname=${inputssansextension[$j]}_maskedwith_${f_basename%%.*}.nii.gz
                 fslmaths ${inputs[$j]} -mas $f $outname > /dev/null
                 echo $outname
             done
