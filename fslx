@@ -168,7 +168,7 @@ do
             outname=${inputssansextension[0]}_echoescombined.nii.gz
             for (( j=1; j<${#inputs[@]}; j++ )) ; do
                 # Add an input and overwrite tmpname
-                fslmaths $x -add ${inputs[j]} $tmpname > /dev/null
+                fslmaths $x -add ${inputs[$j]} $tmpname > /dev/null
                 x=$tmpname
             done
             # Divide ny the total number of echoes
@@ -186,7 +186,7 @@ do
             # Compute lower threshold
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_lthresh${f/./_}.nii.gz
-                fslmaths ${inputs[j]} -thr $f $outname > /dev/null
+                fslmaths ${inputs[$j]} -thr $f $outname > /dev/null
                 echo $outname
             done
             break
@@ -195,7 +195,7 @@ do
             # Compute e**image, voxelwise.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_uthresh${f/./_}.nii.gz
-                fslmaths ${inputs[j]} -uthr $f $outname > /dev/null
+                fslmaths ${inputs[$j]} -uthr $f $outname > /dev/null
                 echo $outname
             done
             break
