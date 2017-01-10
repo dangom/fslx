@@ -51,7 +51,8 @@ As of yet, FSLX supports the following:
 | align or register or reg | Align image to reference             | yes      | flirt                  |
 | lthresh or lthr          | Low threshold, usage: fslx lthr 10   | yes      | fslmaths -thr          |
 | uthresh or uthr          | Upper threshold, usage: fslx uthr 5  | yes      | fslmaths -uthr         |
-| smooth or sm             | Smooth image(mm), usage: fslx sm 5   | yes      | fslmaths -s            |
+| gauss or sm              | Gauss filter(mm), usage: fslx sm 5   | yes      | fslmaths -s            |
+| susan or smooth or sue   | Smooth image(mm), usage: fslx sm 5   | yes      | susan                  |
 | highpass or hpass        | Hpass filter(s), usage: fslx hpass 5 | yes      | fslmaths -bptf N -1    |
 | nan or nans              | image(image==nan) = 0                | yes      | fslmaths -nan          |
 | exp                      | Compute e^image                      | yes      | fslmaths -exp          |
