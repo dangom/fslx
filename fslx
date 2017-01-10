@@ -391,8 +391,8 @@ do
             currdir=`dirname $f`; currfile=`basename $f`; currfile="${currfile%%.*}"
             icadir=${currdir}/${currfile}.ica
             outname=${namesansextension}_IC.nii.gz
-            cp ${icadir}/melodic_IC.nii.gz $outname
-            mv ${icadir} ${currdir}/${currfile}_ICAdir
+            /usr/bin/cp ${icadir}/melodic_IC.nii.gz $outname
+            /usr/bin/mv ${icadir} ${currdir}/${currfile}_ICAdir
             # mv ${icadir}/report ${currdir}/${currfile}_IC_reports
             # mv ${icadir}/mean.nii.gz ${icadir}/mask.nii.gz ${currdir}/${currfile}_IC_reports
             # rm -rf $icadir
@@ -408,6 +408,9 @@ do
         testscript)
             echo $0
             break
+            ;;
+        tr)
+            echo `fslinfo $f | /usr/bin/grep pixdim4 | /usr/bin/sed 's/pixdim4        //'`
             ;;
         v|view)
             fslview `echo ${inputssansextension[@]}`

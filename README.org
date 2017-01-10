@@ -63,6 +63,7 @@ As of yet, FSLX supports the following:
 | header or hd             | Read image header                    | no       | fslhd                  |
 | nvols                    | Query number of volumes in image     | no       | fslnvols               |
 | info                     | Query info, e.g., image dimensions   | no       | fslinfo                |
+| tr                       | Query the TR                         | no       | fslinfo                |
 
 Coming soon, hopefully: stats, segmentation with FAST, smart registration to MNI152.
 
