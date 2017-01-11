@@ -280,7 +280,7 @@ do
             #  Apply a mask on all inputs.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 f_basename=`basename ${f}`
-                outname=${inputssansextension[$j]}_maskedwith_${f_basename%%.*}.nii.gz
+                outname=${inputssansextension[$j]}_masked.nii.gz
                 fslmaths ${inputs[$j]} -mas $f $outname > /dev/null
                 echo $outname
             done
