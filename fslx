@@ -279,12 +279,32 @@ do
         applymask|mask)
             #  Apply a mask on all inputs.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                f_basename=`basename ${f}`
                 outname=${inputssansextension[$j]}_masked.nii.gz
                 fslmaths ${inputs[$j]} -mas $f $outname > /dev/null
                 echo $outname
             done
             break
+            ;;
+        inorm|intnorm)
+            median=`fslstats $f -p 50`
+            normfactor=$(python -c "from __future__ import division; print(10000.0/$median)")
+            fslmaths $f -mul $normfactor ${namesansextension}_inorm.nii.gz
+            echo ${namesansextension}_inorm.nii.gz
+            ;;
+        meinorm|meintnorm)
+            merged_file_name=/tmp/tmp_deleteme_merged.nii.gz
+            if [ ! -e "$merged_file_name" ]
+            then
+                fslmerge -t $merged_file_name `echo ${inputssansextension[@]}`
+                median=`fslstats $merged_file_name -p 50`
+                normfactor=$(python -c "from __future__ import division; print(10000.0/$median)")
+            fi
+            fslmaths $f -mul $normfactor ${namesansextension}_inorm.nii.gz
+            echo ${namesansextension}_inorm.nii.gz
+            if [ $INDEX_AT -eq $((${#inputs[@]} - 1)) ]
+            then
+                rm $merged_file_name
+            fi
             ;;
         split|tsplit)
             # Split a 4d dataset into multiple 3d.
