@@ -295,27 +295,34 @@ do
             echo ${namesansextension}_inorm.nii.gz
             ;;
         meinorm|meintnorm)
-            merged_file_name=/tmp/${namesansextension////_}.nii.gz
-            if [ ! -e "$merged_file_name" ]
-            then
-                meanfile=`$0 tmean $f`
+            if [ $INDEX_AT -eq 0 ]
+            then # Find the first echo
+                maxscale=0
+                firstecho=0
+                for (( j=0 ; j<${#inputs[@]}; j++ )) ; do
+                    tmpname=${inputssansextension[$j]}_tmp.nii.gz
+                    fslroi ${inputs[$j]} $tmpname 0 1
+                    themean=`fslstats $tmpname -m`
+                    # Floating point comparison if mean > maxscale
+                    if [ 1 -eq "$(echo "${themean} > ${maxscale}" | bc)" ]
+                    then
+                        maxscale=$themean
+                        firstecho=$j
+                    fi
+                    imrm $tmpname
+                done #first echo found.
+                # Compute the scaling from this first echo
+                meanfile=`$0 tmean ${inputs[$firstecho]}`
                 mask=`$0 betmask 0.3 $meanfile`
-                fslmerge -t $merged_file_name `echo ${inputssansextension[@]}`
-                # The median isn't really a good choice for multiecho, because it will simply
-                # fall in one of the echoes.
-                # A somewhat better strategy is to compute the 20% and the 80% percentile and
-                # average those. That may not be too good for a large number of echoes, though..
-                read median1 median2 <<< `fslstats $merged_file_name -k $mask -p 20 -p 80`
-                median=$(python -c "from __future__ import division; print(($median1+$median2)/2)")
+                median=`fslstats ${inputs[$firstecho]} -k $mask -p 50`
                 imrm $meanfile $mask
                 normfactor=$(python -c "from __future__ import division; print(10000.0/$median)")
-            fi
+            fi # scaling factor computed.
+
+            # Finally, apply the same scaling factor for all echoes.
             fslmaths $f -mul $normfactor ${namesansextension}_meinorm.nii.gz
             echo ${namesansextension}_meinorm.nii.gz
-            if [ $INDEX_AT -eq $((${#inputs[@]} - 1)) ]
-            then
-                rm $merged_file_name
-            fi
+
             ;;
         split|tsplit)
             # Split a 4d dataset into multiple 3d.
