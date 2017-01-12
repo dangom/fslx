@@ -72,6 +72,15 @@ then
     exit 0
 fi
 
+# Check if GNU readlink is available (for MacOS)
+expandpath() {
+    if hash greadlink 2>/dev/null; then
+        greadlink "$@"
+    else
+        readlink "$@"
+    fi
+}
+
 # The operation to perform is ALWAYS the first argument to our wrapper.
 operation=$1
 
@@ -85,11 +94,17 @@ if [[ $2 =~ $re ]] ; then
     inputs[0]=`echo $2`
     filenames[0]=`echo $2`
 else
-    inputs[0]=`readlink -f $2`
+    inputs[0]=`expandpath -f $2`
     currfile=${inputs[0]}
 
+    if [ ! -f "$currfile" ]
+    then
+        echo "Your input to fslx, ${currfile} either doesn't exist, is not a file or is not readable."
+        exit 1
+    fi
+
     ## Split between directory and basename
-    basedir=`readlink -f $(dirname $currfile)`
+    basedir=`expandpath -f $(dirname $currfile)`
     basefile=`basename $currfile`
 
     inputssansextension[0]="$basedir/${basefile%%.*}"
@@ -99,10 +114,17 @@ fi
 # Start at 2 means: skip $0, $1 (the operation) and $2 (a possible number)
 for (( i=3 ; i<=$# ; i++ )) ; do
     currfile=`echo ${!i}`
-    currfile=`readlink -f $currfile` # This adds support for relative input paths.
+    currfile=`expandpath -f $currfile` # This adds support for relative input paths.
+
+    if [ ! -f "$currfile" ]
+    then
+        echo "Your input to fslx, ${currfile} either doesn't exist, is not a file or is not readable."
+        exit 1
+    fi
+
 
     ## Split between directory and basename
-    basedir=`readlink -f $(dirname $currfile)`
+    basedir=`expandpath -f $(dirname $currfile)`
     basefile=`basename $currfile`
 
     inputs[$i-2]=$basedir/$basefile
