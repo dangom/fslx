@@ -318,7 +318,7 @@ do
             ;;
         meinorm|meintnorm)
             if [ $INDEX_AT -eq 0 ]
-            then # Find the first echo
+            then # Find the first echo (be independent of input order) assuming it has the highest mean.
                 maxscale=0
                 firstecho=0
                 for (( j=0 ; j<${#inputs[@]}; j++ )) ; do
@@ -350,10 +350,22 @@ do
             # Split a 4d dataset into multiple 3d.
             fslsplit $f $f -t
             ;;
-        merge|tmerge)
+        merge)
             # Merge multiple 2d into a 3d, or multiple 3d into a 4d dataset.
             fslmerge -a ${inputssansextension[0]}_upto_${inputssansextension[-1]}_merged.nii.gz `echo ${inputssansextension[@]}`
             echo ${inputssansextension[0]}_upto_${inputssansextension[-1]}_merged.nii.gz
+            break
+            ;;
+        tmerge|merget|concatt|tconcat)
+            # Merge multiple 2d into a 3d, or multiple 3d into a 4d dataset.
+            fslmerge -t ${inputssansextension[0]}_upto_${inputssansextension[-1]}_tmerged.nii.gz `echo ${inputssansextension[@]}`
+            echo ${inputssansextension[0]}_upto_${inputssansextension[-1]}_tmerged.nii.gz
+            break
+            ;;
+        zmerge|mergez|concatz|zconcat)
+            # Merge multiple 2d into a 3d, or multiple 3d into a 4d dataset.
+            fslmerge -z ${inputssansextension[0]}_upto_${inputssansextension[-1]}_zmerged.nii.gz `echo ${inputssansextension[@]}`
+            echo ${inputssansextension[0]}_upto_${inputssansextension[-1]}_zmerged.nii.gz
             break
             ;;
         nvols)
