@@ -35,35 +35,36 @@ and things just work. Alignment, for example, can be called with any of ~reg|ali
 
 As of yet, FSLX supports the following:
 
-| Operation                | Effect                               | Pipeable | Original FSL operation |
-|--------------------------+--------------------------------------+----------+------------------------|
-| tmean                    | Compute temporal mean                | yes      | fslmaths -Tmean        |
-| tstd                     | Compute temporal std                 | yes      | fslmaths -Tstd         |
-| tsnr                     | Compute temporal tsnr                | yes      | fslmaths mean -div std |
-| moco or mc               | Motion correction                    | yes      | mcflirt                |
-| mocome                   | Motion correction for multiechoes    | yes      | mcflirt                |
-| ica or melodic           | ICA of all inputs. Pipes IC maps     | yes      | melodic -i             |
-| view or v                | Open files in viewer, pipes through  | yes      | fslview                |
-| brain or rmskull or bet  | Remove skull                         | yes      | bet                    |
-| merge or tmerge          | Merge 2D -> or 3D -> 4D              | yes      | fslmerge               |
-| echocombine of mecombine | Merge echoes by averaging            | yes      | fslmaths -add & -div   |
-| split or tsplit          | Split 4D image into multiple 3D      | no yet   | fslsplit               |
-| align or register or reg | Align image to reference             | yes      | flirt                  |
-| lthresh or lthr          | Low threshold, usage: fslx lthr 10   | yes      | fslmaths -thr          |
-| uthresh or uthr          | Upper threshold, usage: fslx uthr 5  | yes      | fslmaths -uthr         |
-| gauss or sm              | Gauss filter(mm), usage: fslx sm 5   | yes      | fslmaths -s            |
-| susan or smooth or sue   | Smooth image(mm), usage: fslx sm 5   | yes      | susan                  |
-| highpass or hpass        | Hpass filter(s), usage: fslx hpass 5 | yes      | fslmaths -bptf N -1    |
-| nan or nans              | image(image==nan) = 0                | yes      | fslmaths -nan          |
-| exp                      | Compute e^image                      | yes      | fslmaths -exp          |
-| sin                      | Compute sin(image)                   | yes      | fslmaths -sin          |
-| abs or mag or magn       | Compute abs(image)                   | yes      | fslmaths -abs          |
-| bin                      | image(image>0) ? 1 : 0               | yes      | fslmaths -bin          |
-| recip                    | 1/image, voxelwise                   | yes      | fslmaths -recip        |
-| header or hd             | Read image header                    | no       | fslhd                  |
-| nvols                    | Query number of volumes in image     | no       | fslnvols               |
-| info                     | Query info, e.g., image dimensions   | no       | fslinfo                |
-| tr or TR                 | Query the TR                         | no       | fslinfo                |
+| Operation                | Effect                               | Pipeable | Original FSL operations |
+|--------------------------+--------------------------------------+----------+-------------------------|
+| tmean                    | Compute temporal mean                | yes      | fslmaths -Tmean         |
+| tstd                     | Compute temporal std                 | yes      | fslmaths -Tstd          |
+| tsnr                     | Compute temporal tsnr                | yes      | fslmaths mean -div std  |
+| tsnrtr or trtsnr         | Compute temporal tsnr / sqrt(TR)     | yes      | fslmaths mean -div std  |
+| moco or mc               | Motion correction                    | yes      | mcflirt                 |
+| mocome                   | Motion correction for multiechoes    | yes      | mcflirt                 |
+| ica or melodic           | ICA of all inputs. Pipes IC maps     | yes      | melodic -i              |
+| view or v                | Open files in viewer, pipes through  | yes      | fslview                 |
+| brain or rmskull or bet  | Remove skull                         | yes      | bet                     |
+| merge or tmerge          | Merge 2D -> or 3D -> 4D              | yes      | fslmerge                |
+| echocombine of mecombine | Merge echoes by averaging            | yes      | fslmaths -add & -div    |
+| split or tsplit          | Split 4D image into multiple 3D      | no yet   | fslsplit                |
+| align or register or reg | Align image to reference             | yes      | flirt                   |
+| lthresh or lthr          | Low threshold, usage: fslx lthr 10   | yes      | fslmaths -thr           |
+| uthresh or uthr          | Upper threshold, usage: fslx uthr 5  | yes      | fslmaths -uthr          |
+| gauss or sm              | Gauss filter(mm), usage: fslx sm 5   | yes      | fslmaths -s             |
+| susan or smooth or sue   | Smooth image(mm), usage: fslx sm 5   | yes      | susan                   |
+| highpass or hpass        | Hpass filter(s), usage: fslx hpass 5 | yes      | fslmaths -bptf N -1     |
+| nan or nans              | image(image==nan) = 0                | yes      | fslmaths -nan           |
+| exp                      | Compute e^image                      | yes      | fslmaths -exp           |
+| sin                      | Compute sin(image)                   | yes      | fslmaths -sin           |
+| abs or mag or magn       | Compute abs(image)                   | yes      | fslmaths -abs           |
+| bin                      | image(image>0) ? 1 : 0               | yes      | fslmaths -bin           |
+| recip                    | 1/image, voxelwise                   | yes      | fslmaths -recip         |
+| header or hd             | Read image header                    | no       | fslhd                   |
+| nvols                    | Query number of volumes in image     | no       | fslnvols                |
+| info                     | Query info, e.g., image dimensions   | no       | fslinfo                 |
+| tr or TR                 | Query the TR                         | no       | fslinfo                 |
 
 Coming soon, hopefully: stats, segmentation with FAST, smart registration to MNI152.
 

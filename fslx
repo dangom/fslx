@@ -159,8 +159,22 @@ do
             fslmaths $f -Tmean ${namesansextension}_mean_deleteme.nii.gz
             fslmaths $f -Tstd ${namesansextension}_std_deleteme.nii.gz
             fslmaths ${namesansextension}_mean_deleteme.nii.gz -div ${namesansextension}_std_deleteme.nii.gz ${namesansextension}_tsnr.nii.gz
+            fslmaths ${namesansextension}_tsnr.nii.gz -nan ${namesansextension}_tsnr.nii.gz
             imrm ${namesansextension}_mean_deleteme.nii.gz ${namesansextension}_std_deleteme.nii.gz
             echo ${namesansextension}_tsnr.nii.gz
+            ;;
+        tsnr_tr|tsnrtr|trtsnr)
+            # Compute the ratio of the mean and standard deviation of the image (in time). Reduces a 4D to a 3D volume.
+            fslmaths $f -Tmean ${namesansextension}_mean_deleteme.nii.gz
+            fslmaths $f -Tstd ${namesansextension}_std_deleteme.nii.gz
+            fslmaths ${namesansextension}_mean_deleteme.nii.gz -div ${namesansextension}_std_deleteme.nii.gz ${namesansextension}_tsnrTR.nii.gz
+            fslmaths ${namesansextension}_tsnrTR.nii.gz -nan ${namesansextension}_tsnrTR.nii.gz
+            # Call fslx on original file to get the TR (in seconds) and compute it's square root.
+            sqrt_tr=$(echo "sqrt ( `$0 tr $f` )" | bc -l)
+            echo $sqrt_tr
+            fslmaths ${namesansextension}_tsnrTR.nii.gz -div $sqrt_tr ${namesansextension}_tsnrTR.nii.gz
+            imrm ${namesansextension}_mean_deleteme.nii.gz ${namesansextension}_std_deleteme.nii.gz
+            echo ${namesansextension}_tsnrTR.nii.gz
             ;;
         mocome|mocomultiecho|memoco)
             # How many volumes?
