@@ -366,14 +366,14 @@ do
             ;;
         merge)
             # Merge multiple 2d into a 3d, or multiple 3d into a 4d dataset.
-            fslmerge -a ${inputssansextension[0]}_upto_${inputssansextension[-1]}_merged.nii.gz `echo ${inputssansextension[@]}`
-            echo ${inputssansextension[0]}_upto_${inputssansextension[-1]}_merged.nii.gz
+            fslmerge -a ${inputssansextension[0]}_merged.nii.gz `echo ${inputssansextension[@]}`
+            echo inputssansextension_merged.nii.gz
             break
             ;;
         tmerge|merget|concatt|tconcat)
             # Merge multiple 2d into a 3d, or multiple 3d into a 4d dataset.
-            fslmerge -t ${inputssansextension[0]}_upto_${inputssansextension[-1]}_tmerged.nii.gz `echo ${inputssansextension[@]}`
-            echo ${inputssansextension[0]}_upto_${inputssansextension[-1]}_tmerged.nii.gz
+            fslmerge -t ${inputssansextension[0]}_tmerged.nii.gz `echo ${inputssansextension[@]}`
+            echo ${inputssansextension[0]}_tmerged.nii.gz
             break
             ;;
         zmerge|mergez|concatz|zconcat)
