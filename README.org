@@ -48,7 +48,7 @@ As of yet, FSLX supports the following:
 | brain or rmskull or bet  | Remove skull                         | yes      | bet                     |
 | merge or tmerge          | Merge 2D -> or 3D -> 4D              | yes      | fslmerge                |
 | echocombine of mecombine | Merge echoes by averaging            | yes      | fslmaths -add & -div    |
-| split or tsplit          | Split 4D image into multiple 3D      | no yet   | fslsplit                |
+| split or tsplit          | Split 4D image into multiple 3D      | not yet  | fslsplit                |
 | align or register or reg | Align image to reference             | yes      | flirt                   |
 | lthresh or lthr          | Low threshold, usage: fslx lthr 10   | yes      | fslmaths -thr           |
 | uthresh or uthr          | Upper threshold, usage: fslx uthr 5  | yes      | fslmaths -uthr          |
@@ -63,6 +63,7 @@ As of yet, FSLX supports the following:
 | recip                    | 1/image, voxelwise                   | yes      | fslmaths -recip         |
 | header or hd             | Read image header                    | no       | fslhd                   |
 | nvols                    | Query number of volumes in image     | no       | fslnvols                |
+| cc or crosscorr          | Compute cross correlation            | no       | fslcc                   |
 | info                     | Query info, e.g., image dimensions   | no       | fslinfo                 |
 | tr or TR                 | Query the TR                         | no       | fslinfo                 |
 

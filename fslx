@@ -390,7 +390,7 @@ do
             # Short info read from the header (datatype and dimensions).
             fslinfo $f
             ;;
-        align|register|reg)
+        align|register|reg|flirt)
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_reg_to_$f.nii.gz
                 flirt -in ${inputs[j]} -ref $f -out $outname > /dev/null
@@ -487,6 +487,17 @@ do
         #     # Stats
         #     fslstats $f
         #     ;;
+        crosscorr|cc|crossc|crosscorrelation)
+            ccfile=`basename $f`
+            ccfile="${ccfile%%.*}"
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${inputssansextension[$j]}_cc_to_${ccfile}.txt
+                echo "${ccfile} `basename ${inputs[$j]}` cc_value" > $outname
+                fslcc --noabs -p 3 -t .204 $f ${inputs[$j]} | sort -r -nk3 >> $outname
+                echo $outname
+            done
+            break
+            ;;
         testinputs)
             echo ${inputs[@]}
             break
