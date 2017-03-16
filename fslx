@@ -32,6 +32,12 @@
 # TODO: Add support for dual_regression
 # TODO: Add support for mixture modelling.
 
+# Safety precautions
+# Using a variable that is not set will raise an error
+set -o nounset
+# Exit if a command fails.
+set -o errexit
+
 function echo_help {
     echo "Welcome to fslx v0.1!! The *dumbest* wrapper of all times."
     echo "Fslx requires at least two arguments: an operation and one or more inputs:"
