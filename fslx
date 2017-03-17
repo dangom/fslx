@@ -24,7 +24,7 @@
 # nor the inconsistent parameter naming conventions of each of them.
 # It also accepts multiple images as input to perform the same operations,
 # so one can do something like:
-# ls | xargs fslx nan
+# ls | xarg/project/3015046.02/derivatives/analysis/IC1/Random/IC1_diff_MB_MB_diffAver_tfce_corrp_tstat1_masked.nii.gzs fslx nan
 # And remove nans of all images in a particular directory, for example.
 # TODO: Support for applyxfm, registration to MNI, concatenate transformation matrices.
 # TODO: Read from STDIN?
@@ -39,7 +39,6 @@ set -o nounset
 set -o errexit
 
 function echo_help {
-    echo "Welcome to fslx v0.1!! The *dumbest* wrapper of all times."
     echo "Fslx requires at least two arguments: an operation and one or more inputs:"
     echo "Compute mean image: fslx mean img1 img2"
     echo ""
@@ -503,6 +502,25 @@ do
                 echo $outname
             done
             break
+            ;;
+        overlay_tfce)
+            REF_MNI="$FSLDIR/data/standard/MNI152_T1_0.5mm.nii.gz"
+
+            TEMP1=${namesansextension}_deleteme1.nii.gz
+            TEMP2=${namesansextension}_deleteme2.nii.gz
+            OUTNAMEPPM=${namesansextension}_overlay.ppm
+            OUTNAMEPNG=${namesansextension}_overlay.png
+
+            flirt -in $f -ref $REF_MNI -applyxfm -usesqform -out $TEMP1
+            overlay 1 0 $REF_MNI -A $TEMP1 0.95 1 $TEMP2
+            slicer $TEMP2 -S 24 1200 $OUTNAMEPPM
+            sleep 0.2
+            convert ${OUTNAMEPPM} ${OUTNAMEPNG}
+
+            imrm $TEMP1 $TEMP2
+            rm $OUTNAMEPPM
+
+            echo $OUTNAMEPNG
             ;;
         testinputs)
             echo ${inputs[@]}
