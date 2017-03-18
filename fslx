@@ -511,16 +511,21 @@ do
             OUTNAMEPPM=${namesansextension}_overlay.ppm
             OUTNAMEPNG=${namesansextension}_overlay.png
 
+            OUTNAMEPPM3=${namesansextension}_overlay_3orient.ppm
+            OUTNAMEPNG3=${namesansextension}_overlay_3orient.png
+
             flirt -in $f -ref $REF_MNI -applyxfm -usesqform -out $TEMP1
             overlay 1 0 $REF_MNI -A $TEMP1 0.95 1 $TEMP2
-            slicer $TEMP2 -S 24 1200 $OUTNAMEPPM
+            slicer $TEMP2 -S 24 1200 $OUTNAMEPPM -a ${OUTNAMEPPM3}
             sleep 0.2
             convert ${OUTNAMEPPM} ${OUTNAMEPNG}
+            convert ${OUTNAMEPPM3} ${OUTNAMEPNG3}
 
             imrm $TEMP1 $TEMP2
-            rm $OUTNAMEPPM
+            rm $OUTNAMEPPM $OUTNAMEPPM3
 
             echo $OUTNAMEPNG
+            echo $OUTNAMEPNG3
             ;;
         testinputs)
             echo ${inputs[@]}
