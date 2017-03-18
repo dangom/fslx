@@ -515,7 +515,7 @@ do
             OUTNAMEPNG3=${namesansextension}_overlay_3orient.png
 
             flirt -in $f -ref $REF_MNI -applyxfm -usesqform -out $TEMP1
-            overlay 1 0 $REF_MNI -A $TEMP1 0.95 1 $TEMP2
+            overlay 1 0 $REF_MNI -A $TEMP1 0.9975 1 $TEMP2
             slicer $TEMP2 -S 24 1200 $OUTNAMEPPM -a ${OUTNAMEPPM3}
             sleep 0.2
             convert ${OUTNAMEPPM} ${OUTNAMEPNG}
