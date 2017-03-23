@@ -539,8 +539,8 @@ do
             echo `fslinfo $f | /usr/bin/grep pixdim4 | /usr/bin/sed 's/pixdim4        //'`
             ;;
         v|view)
-            fslview `echo ${inputssansextension[@]}`
-            echo ${inputssansextension[@]}
+            fslview `echo ${inputs[@]}`
+            echo ${inputs[@]}
             break
             ;;
         *)
