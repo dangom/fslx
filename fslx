@@ -92,13 +92,13 @@ expandpath() {
 
 # The fsl cluster tool outputs a malformed txt file. This function fixes it.
 correct_cluster_output() {
-    sed -i -e 's/Cluster Index/ClusterIndex/g' $1
-    sed -i -e 's/MAX X (vox)/MAX_X_(vox)/g' $1
-    sed -i -e 's/MAX Y (vox)/MAX_Y_(vox)/g' $1
-    sed -i -e 's/MAX Z (vox)/MAX_Z_(vox)/g' $1
-    sed -i -e 's/COG X (vox)/COG_X_(vox)/g' $1
-    sed -i -e 's/COG Y (vox)/COG_Y_(vox)/g' $1
-    sed -i -e 's/COG Z (vox)/COG_Z_(vox)/g' $1
+    sed --in-place --expression 's/Cluster Index/ClusterIndex/g' $1
+    sed --in-place --expression 's/MAX X (vox)/MAX_X_(vox)/g' $1
+    sed --in-place --expression 's/MAX Y (vox)/MAX_Y_(vox)/g' $1
+    sed --in-place --expression 's/MAX Z (vox)/MAX_Z_(vox)/g' $1
+    sed --in-place --expression 's/COG X (vox)/COG_X_(vox)/g' $1
+    sed --in-place --expression 's/COG Y (vox)/COG_Y_(vox)/g' $1
+    sed --in-place --expression 's/COG Z (vox)/COG_Z_(vox)/g' $1
 
 }
 
