@@ -38,6 +38,9 @@ set -o nounset
 # Exit if a command fails.
 set -o errexit
 
+# Uncomment to debug.
+# set -x
+
 function echo_help {
     echo "Fslx requires at least two arguments: an operation and one or more inputs:"
     echo "Compute mean image: fslx mean img1 img2"
@@ -86,6 +89,19 @@ expandpath() {
     fi
 }
 
+
+# The fsl cluster tool outputs a malformed txt file. This function fixes it.
+correct_cluster_output() {
+    sed -i -e 's/Cluster Index/ClusterIndex/g' $1
+    sed -i -e 's/MAX X (vox)/MAX_X_(vox)/g' $1
+    sed -i -e 's/MAX Y (vox)/MAX_Y_(vox)/g' $1
+    sed -i -e 's/MAX Z (vox)/MAX_Z_(vox)/g' $1
+    sed -i -e 's/COG X (vox)/COG_X_(vox)/g' $1
+    sed -i -e 's/COG Y (vox)/COG_Y_(vox)/g' $1
+    sed -i -e 's/COG Z (vox)/COG_Z_(vox)/g' $1
+
+}
+
 # The operation to perform is ALWAYS the first argument to our wrapper.
 operation=$1
 
@@ -98,6 +114,7 @@ re='^[0-9]+([.][0-9]+)?$'
 if [[ $2 =~ $re ]] ; then
     inputs[0]=`echo $2`
     filenames[0]=`echo $2`
+    inputssansextension[0]=`echo $2`
 else
     inputs[0]=`expandpath -f $2`
     currfile=${inputs[0]}
@@ -136,9 +153,9 @@ for (( i=3 ; i<=$# ; i++ )) ; do
     inputssansextension[$i-2]="$basedir/${basefile%%.*}"
 done
 
-#echo "You choose operation $operation"
-#echo "The operation will be applied in "
-#echo ${inputssansextension[@]}
+# echo "You choose operation $operation"
+# echo "The operation will be applied in "
+# echo ${inputssansextension[@]}
 
 # I am aware that there is lots of code repetition and that I could easily refactor the following switch, so:
 # TODO: Eliminate obscene amount of repetition.
@@ -526,6 +543,15 @@ do
 
             echo $OUTNAMEPNG
             echo $OUTNAMEPNG3
+            ;;
+        cluster)
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${inputssansextension[$j]}_clusterinfo.txt
+                cluster -i ${inputs[$j]} -t $f > $outname
+                correct_cluster_output $outname
+                echo $outname
+            done
+            break
             ;;
         testinputs)
             echo ${inputs[@]}
