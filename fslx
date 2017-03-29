@@ -92,13 +92,13 @@ expandpath() {
 
 # The fsl cluster tool outputs a malformed txt file. This function fixes it.
 correct_cluster_output() {
-    sed --in-place --expression 's/Cluster Index/ClusterIndex/g' $1
-    sed --in-place --expression 's/MAX X (vox)/MAX_X_(vox)/g' $1
-    sed --in-place --expression 's/MAX Y (vox)/MAX_Y_(vox)/g' $1
-    sed --in-place --expression 's/MAX Z (vox)/MAX_Z_(vox)/g' $1
-    sed --in-place --expression 's/COG X (vox)/COG_X_(vox)/g' $1
-    sed --in-place --expression 's/COG Y (vox)/COG_Y_(vox)/g' $1
-    sed --in-place --expression 's/COG Z (vox)/COG_Z_(vox)/g' $1
+    sed --in-place --expression 's/Cluster Index/ClusterIndex/g' "$1"
+    sed --in-place --expression 's/MAX X (vox)/MAX_X_(vox)/g' "$1"
+    sed --in-place --expression 's/MAX Y (vox)/MAX_Y_(vox)/g' "$1"
+    sed --in-place --expression 's/MAX Z (vox)/MAX_Z_(vox)/g' "$1"
+    sed --in-place --expression 's/COG X (vox)/COG_X_(vox)/g' "$1"
+    sed --in-place --expression 's/COG Y (vox)/COG_Y_(vox)/g' "$1"
+    sed --in-place --expression 's/COG Z (vox)/COG_Z_(vox)/g' "$1"
 
 }
 
@@ -112,11 +112,10 @@ operation=$1
 # The second input may well be a number, in which case we have to check for it.
 re='^[0-9]+([.][0-9]+)?$'
 if [[ $2 =~ $re ]] ; then
-    inputs[0]=`echo $2`
-    filenames[0]=`echo $2`
-    inputssansextension[0]=`echo $2`
+    inputs[0]=$2
+    inputssansextension[0]=$2
 else
-    inputs[0]=`expandpath -f $2`
+    inputs[0]=$(expandpath -f "$2")
     currfile=${inputs[0]}
 
     if [ ! -f "$currfile" ]
@@ -126,8 +125,8 @@ else
     fi
 
     ## Split between directory and basename
-    basedir=`expandpath -f $(dirname $currfile)`
-    basefile=`basename $currfile`
+    basedir=$(expandpath -f "$(dirname "$currfile")")
+    basefile=$(basename "$currfile")
 
     inputssansextension[0]="$basedir/${basefile%%.*}"
 fi
@@ -135,8 +134,8 @@ fi
 
 # Start at 2 means: skip $0, $1 (the operation) and $2 (a possible number)
 for (( i=3 ; i<=$# ; i++ )) ; do
-    currfile=`echo ${!i}`
-    currfile=`expandpath -f $currfile` # This adds support for relative input paths.
+    currfile=${!i}
+    currfile=$(expandpath -f "$currfile") # This adds support for relative input paths.
 
     if [ ! -f "$currfile" ]
     then
@@ -146,8 +145,8 @@ for (( i=3 ; i<=$# ; i++ )) ; do
 
 
     ## Split between directory and basename
-    basedir=`expandpath -f $(dirname $currfile)`
-    basefile=`basename $currfile`
+    basedir=$(expandpath -f "$(dirname "$currfile")")
+    basefile=$(basename "$currfile")
 
     inputs[$i-2]=$basedir/$basefile
     inputssansextension[$i-2]="$basedir/${basefile%%.*}"
@@ -160,7 +159,7 @@ done
 # I am aware that there is lots of code repetition and that I could easily refactor the following switch, so:
 # TODO: Eliminate obscene amount of repetition.
 INDEX_AT=0
-for f in ${inputs[@]}
+for f in "${inputs[@]}"
 do
     # We need the name without extension to add a suffix according to the operation performed.
     namesansextension=${inputssansextension[$INDEX_AT]}
@@ -169,66 +168,66 @@ do
         tmean|Tmean)
             # Compute the temporal mean of the image in time. Reduces a 4D to a 3D volume.
             outname=${namesansextension}_tmean.nii.gz
-            fslmaths $f -Tmean $outname; echo $outname
+            fslmaths "$f" -Tmean "$outname"; echo "$outname"
             ;;
         tstd|Tstd)
             # Compute the standard deviation of the image in time. Reduces a 4D to a 3D volume.
             outname=${namesansextension}_tmean.nii.gz
-            fslmaths $f -Tstd $outname; echo $outname
+            fslmaths "$f" -Tstd "$outname"; echo "$outname"
             ;;
         tsnr)
             # Compute the ratio of the mean and standard deviation of the image (in time). Reduces a 4D to a 3D volume.
-            fslmaths $f -Tmean ${namesansextension}_mean_deleteme.nii.gz
-            fslmaths $f -Tstd ${namesansextension}_std_deleteme.nii.gz
-            fslmaths ${namesansextension}_mean_deleteme.nii.gz -div ${namesansextension}_std_deleteme.nii.gz ${namesansextension}_tsnr.nii.gz
-            fslmaths ${namesansextension}_tsnr.nii.gz -nan ${namesansextension}_tsnr.nii.gz
-            imrm ${namesansextension}_mean_deleteme.nii.gz ${namesansextension}_std_deleteme.nii.gz
-            echo ${namesansextension}_tsnr.nii.gz
+            fslmaths "$f" -Tmean "${namesansextension}_mean_deleteme.nii.gz"
+            fslmaths "$f" -Tstd "${namesansextension}_std_deleteme.nii.gz"
+            fslmaths "${namesansextension}_mean_deleteme.nii.gz" -div "${namesansextension}_std_deleteme.nii.gz" "${namesansextension}_tsnr.nii.gz"
+            fslmaths "${namesansextension}_tsnr.nii.gz" -nan "${namesansextension}_tsnr.nii.gz"
+            imrm "${namesansextension}_mean_deleteme.nii.gz" "${namesansextension}_std_deleteme.nii.gz"
+            echo "${namesansextension}_tsnr.nii.gz"
             ;;
         tsnr_tr|tsnrtr|trtsnr)
             # Compute the ratio of the mean and standard deviation of the image (in time). Reduces a 4D to a 3D volume.
-            fslmaths $f -Tmean ${namesansextension}_mean_deleteme.nii.gz
-            fslmaths $f -Tstd ${namesansextension}_std_deleteme.nii.gz
-            fslmaths ${namesansextension}_mean_deleteme.nii.gz -div ${namesansextension}_std_deleteme.nii.gz ${namesansextension}_tsnrTR.nii.gz
-            fslmaths ${namesansextension}_tsnrTR.nii.gz -nan ${namesansextension}_tsnrTR.nii.gz
+            fslmaths "$f" -Tmean "${namesansextension}_mean_deleteme.nii.gz"
+            fslmaths "$f" -Tstd "${namesansextension}_std_deleteme.nii.gz"
+            fslmaths "${namesansextension}_mean_deleteme.nii.gz" -div "${namesansextension}_std_deleteme.nii.gz" "${namesansextension}_tsnrTR.nii.gz"
+            fslmaths "${namesansextension}_tsnrTR.nii.gz" -nan "${namesansextension}_tsnrTR.nii.gz"
             # Call fslx on original file to get the TR (in seconds) and compute it's square root.
-            sqrt_tr=$(echo "sqrt ( `$0 tr $f` )" | bc -l)
-            echo $sqrt_tr
-            fslmaths ${namesansextension}_tsnrTR.nii.gz -div $sqrt_tr ${namesansextension}_tsnrTR.nii.gz
-            imrm ${namesansextension}_mean_deleteme.nii.gz ${namesansextension}_std_deleteme.nii.gz
-            echo ${namesansextension}_tsnrTR.nii.gz
+            sqrt_tr=$(echo "sqrt ( $($0 tr \"$f\") )" | bc -l)
+            echo "$sqrt_tr"
+            fslmaths "${namesansextension}_tsnrTR.nii.gz" -div "$sqrt_tr" "${namesansextension}_tsnrTR.nii.gz"
+            imrm "${namesansextension}_mean_deleteme.nii.gz" "${namesansextension}_std_deleteme.nii.gz"
+            echo "${namesansextension}_tsnrTR.nii.gz"
             ;;
         mocome|mocomultiecho|memoco)
             # How many volumes?
-            numvols=`fslnvols $f`
+            numvols=$(fslnvols "$f")
             # Moco the very first input and output the matrices
-            mcflirt -in $f -mats
-            echo ${namesansextension}_mcf.nii.gz
+            mcflirt -in "$f" -mats
+            echo "${namesansextension}_mcf.nii.gz"
             # This will generate a folder called
-            matsfolder=${namesansextension}_mcf.mat
+            matsfolder="${namesansextension}_mcf.mat"
             # Now we need to loop over the remaining files, as usual.
             for (( j=1; j<${#inputs[@]}; j++ )) ; do
-                fslsplit ${inputs[j]} ${inputssansextension[$j]}_mcf_deleteme -t
+                fslsplit "${inputs[j]}" "${inputssansextension[$j]}_mcf_deleteme" -t
                 # And loop over the split files, mocoing each of them
                 for (( k=0; k<numvols; k++ )) ; do
-                    mcflirt -in `echo $(printf "${inputssansextension[$j]}_mcf_deleteme%04d.nii.gz " $k)` -init `echo $(printf "${matsfolder}/MAT_%04d " $k)`
+                    mcflirt -in "$(echo $(printf "${inputssansextension[$j]}_mcf_deleteme%04d.nii.gz " $k))" -init "$(echo $(printf "${matsfolder}/MAT_%04d " $k))"
                 done
                 # Merge into meaninful mocoed file
-                fslmerge -t ${inputssansextension[$j]}_mcf.nii.gz `echo $(ls ${inputssansextension[$j]}_mcf_deleteme*_mcf.nii.gz)`
+                fslmerge -t "${inputssansextension[$j]}_mcf.nii.gz" $(echo $(ls ${inputssansextension[$j]}_mcf_deleteme*_mcf.nii.gz))
                 # Cleanup - no need to  worry about ls directory because inputssansextension contains the whole path.
-                imrm `echo $(ls ${inputssansextension[$j]}_mcf_deleteme*.nii.gz)`
+                imrm $(echo $(ls ${inputssansextension[$j]}_mcf_deleteme*.nii.gz))
                 # Pipe name of processed file down the line.
-                echo ${inputssansextension[$j]}_mcf.nii.gz
+                echo "${inputssansextension[$j]}_mcf.nii.gz"
             done
             # Final cleanup
-            /usr/bin/rm -rf $matsfolder
+            /usr/bin/rm -rf "$matsfolder"
             break;
             ;;
         echocombine|combineechoes|combinechoes|catechoes|catme|mecombine|mecat|combinemultiecho|combineme)
             # Merge all echoes by simple addition
             # Number of echoes =
             nechoes=${#inputs[@]}
-            x=$f
+            x="$f"
             tmpname=${inputssansextension[0]}_tmp_deleteme.nii.gz
             outname=${inputssansextension[0]}_echoescombined.nii.gz
             for (( j=1; j<${#inputs[@]}; j++ )) ; do
@@ -238,21 +237,21 @@ do
             done
             # Divide ny the total number of echoes
             fslmaths $tmpname -div $nechoes $tmpname
-            immv $tmpname $outname
-            echo $outname
+            immv $tmpname "$outname"
+            echo "$outname"
             break # Break out of the loop, since we looped here.
             ;;
         exp)
             # Compute e**image, voxelwise.
-            fslmaths $f -exp ${namesansextension}_exp.nii.gz
+            fslmaths "$f" -exp ${namesansextension}_exp.nii.gz
             echo ${namesansextension}_exp.nii.gz
             ;;
         lthresh|lthr|lowthresh)
             # Compute lower threshold
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_lthresh${f/./_}.nii.gz
-                fslmaths ${inputs[$j]} -thr $f $outname > /dev/null
-                echo $outname
+                fslmaths ${inputs[$j]} -thr "$f" "$outname" > /dev/null
+                echo "$outname"
             done
             break
             ;;
@@ -260,8 +259,8 @@ do
             # Compute e**image, voxelwise.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_uthresh${f/./_}.nii.gz
-                fslmaths ${inputs[$j]} -uthr $f $outname > /dev/null
-                echo $outname
+                fslmaths ${inputs[$j]} -uthr "$f" "$outname" > /dev/null
+                echo "$outname"
             done
             break
             ;;
@@ -269,67 +268,67 @@ do
             # Multiply by integer
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_mulby_${f/./_}.nii.gz
-                fslmaths ${inputs[$j]} -mul $f $outname > /dev/null
-                echo $outname
+                fslmaths ${inputs[$j]} -mul "$f" "$outname" > /dev/null
+                echo "$outname"
             done
             break
             ;;
         sin)
             # Compute sin(image), voxelwise.
-            fslmaths $f -sin ${namesansextension}_sin.nii.gz
+            fslmaths "$f" -sin ${namesansextension}_sin.nii.gz
             echo ${namesansextension}_sin.nii.gz
             ;;
         abs|mag|magn)
             # Compute the absolute value of an image, pixelwise.
-            fslmaths $f -abs ${namesansextension}_abs.nii.gz
+            fslmaths "$f" -abs ${namesansextension}_abs.nii.gz
             echo ${namesansextension}_abs.nii.gz
             ;;
         min|minimum|tmin)
             # Compute the absolute value of an image, pixelwise.
-            fslmaths $f -Tmin ${namesansextension}_min.nii.gz
+            fslmaths "$f" -Tmin ${namesansextension}_min.nii.gz
             echo ${namesansextension}_min.nii.gz
             ;;
         bin)
             # Create a binary image from the input. Values > 0 are set to 1.
-            fslmaths $f -bin ${namesansextension}_bin.nii.gz
+            fslmaths "$f" -bin ${namesansextension}_bin.nii.gz
             echo ${namesansextension}_bin.nii.gz
             ;;
         nan|nans)
             # Remove nans.
-            fslmaths $f -nan ${namesansextension}_no_nans.nii.gz
+            fslmaths "$f" -nan ${namesansextension}_no_nans.nii.gz
             echo ${namesansextension}_no_nans.nii.gz
             ;;
         recip)
             # Compute 1/image, voxelwise.
-            fslmaths $f -recip ${namesansextension}_recip.nii.gz
+            fslmaths "$f" -recip ${namesansextension}_recip.nii.gz
             echo ${namesansextension}_recip.nii.gz
             ;;
         percentile|nthpercentile)
             #  Get a brain extracted mask from a given threshold f.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                fslstats -p $f ${inputs[$j]}
+                fslstats -p "$f" ${inputs[$j]}
             done
             break
             ;;
         moco|mc)
             # Motion correction.
-            mcflirt -in $f -out ${namesansextension}_mcf.nii.gz
-            echo ${namesansextension}_mcf.nii.gz
+            mcflirt -in "$f" -out "${namesansextension}_mcf.nii.gz"
+            echo "${namesansextension}_mcf.nii.gz"
             ;;
         header|hd)
             # Read the header.
-            fslhd $f
+            fslhd "$f"
             ;;
         bet|brain|rmskull)
             # Remove the skull from (ideally) an anatomical image.
-            bet2 -in $f -out ${namesansextension}_noskull.nii.gz
+            bet2 -in "$f" -out ${namesansextension}_noskull.nii.gz
             echo ${namesansextension}_noskull.nii.gz
             ;;
         betmask|betm|betfracmask)
             #  Get a brain extracted mask from a given threshold f.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_bet${f/./_}
-                bet2 ${inputs[$j]} $outname -f $f -n -m
+                bet2 ${inputs[$j]} "$outname" -f "$f" -n -m
                 echo ${outname}_mask.nii.gz
             done
             break
@@ -338,18 +337,18 @@ do
             #  Apply a mask on all inputs.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_masked.nii.gz
-                fslmaths ${inputs[$j]} -mas $f $outname > /dev/null
-                echo $outname
+                fslmaths ${inputs[$j]} -mas "$f" "$outname" > /dev/null
+                echo "$outname"
             done
             break
             ;;
         inorm|intnorm)
-            meanfile=`$0 tmean $f`
+            meanfile=`$0 tmean "$f"`
             mask=`$0 betmask 0.3 $meanfile`
-            median=`fslstats $f -k $mask -p 50`
+            median=`fslstats "$f" -k $mask -p 50`
             imrm $meanfile $mask
             normfactor=$(python -c "from __future__ import division; print(10000.0/$median)")
-            fslmaths $f -mul $normfactor ${namesansextension}_inorm.nii.gz
+            fslmaths "$f" -mul $normfactor ${namesansextension}_inorm.nii.gz
             echo ${namesansextension}_inorm.nii.gz
             ;;
         meinorm|meintnorm)
@@ -378,17 +377,17 @@ do
             fi # scaling factor computed.
 
             # Finally, apply the same scaling factor for all echoes.
-            fslmaths $f -mul $normfactor ${namesansextension}_meinorm.nii.gz
+            fslmaths "$f" -mul $normfactor ${namesansextension}_meinorm.nii.gz
             echo ${namesansextension}_meinorm.nii.gz
 
             ;;
         split|tsplit)
             # Split a 4d dataset into multiple 3d.
-            fslsplit $f $f -t
+            fslsplit "$f" "$f" -t
             ;;
         merge)
             # Merge multiple 2d into a 3d, or multiple 3d into a 4d dataset.
-            fslmerge -a ${inputssansextension[0]}_merged.nii.gz `echo ${inputssansextension[@]}`
+            fslmerge -a ${inputssansextension[0]}_merged.nii.gz $(echo "${inputssansextension[@]}")
             echo inputssansextension_merged.nii.gz
             break
             ;;
@@ -400,23 +399,23 @@ do
             ;;
         zmerge|mergez|concatz|zconcat)
             # Merge multiple 2d into a 3d, or multiple 3d into a 4d dataset.
-            fslmerge -z ${inputssansextension[0]}_upto_${inputssansextension[-1]}_zmerged.nii.gz `echo ${inputssansextension[@]}`
+            fslmerge -z ${inputssansextension[0]}_upto_${inputssansextension[-1]}_zmerged.nii.gz $(echo "${inputssansextension[@]}")
             echo ${inputssansextension[0]}_upto_${inputssansextension[-1]}_zmerged.nii.gz
             break
             ;;
         nvols)
             # Returns the number of volumes in a 4D image.
-            fslnvols $f
+            fslnvols "$f"
             ;;
         info)
             # Short info read from the header (datatype and dimensions).
-            fslinfo $f
+            fslinfo "$f"
             ;;
         align|register|reg|flirt)
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                outname=${inputssansextension[$j]}_reg_to_$f.nii.gz
-                flirt -in ${inputs[j]} -ref $f -out $outname > /dev/null
-                echo $outname
+                outname=${inputssansextension[$j]}_reg_to_"$f".nii.gz
+                flirt -in ${inputs[j]} -ref "$f" -out "$outname" > /dev/null
+                echo "$outname"
             done
             break
             ;;
@@ -428,12 +427,12 @@ do
             # Apply highpass temporal filter with cutoff from 2nd input.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 tr=`fslinfo ${inputs[$j]} | /usr/bin/grep pixdim4 | sed 's/pixdim4        //'`
-                cutoffinsec=$(python -c "from __future__ import division; print('%.2f' % ((1/$tr)*($f/2)))")
+                cutoffinsec=$(python -c "from __future__ import division; print('%.2f' % ((1/$tr)*(\"$f\"/2)))")
                 outname=${inputssansextension[$j]}_lowpass${f/./_}.nii.gz
                 tmpmean=`$0 tmean ${inputs[$j]}`
-                fslmaths ${inputs[$j]} -bptf -1 $cutoffinsec -add $tmpmean $outname > /dev/null
+                fslmaths ${inputs[$j]} -bptf -1 $cutoffinsec -add $tmpmean "$outname" > /dev/null
                 imrm $tmpmean
-                echo $outname
+                echo "$outname"
             done
             break
             ;;
@@ -441,12 +440,12 @@ do
             # Apply highpass temporal filter with cutoff from 2nd input.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 tr=`fslinfo ${inputs[$j]} | /usr/bin/grep pixdim4 | sed 's/pixdim4        //'`
-                cutoffinsec=$(python -c "from __future__ import division; print('%.2f' % ((1/$tr)*($f/2)))")
+                cutoffinsec=$(python -c "from __future__ import division; print('%.2f' % ((1/$tr)*(\"$f\"/2)))")
                 outname=${inputssansextension[$j]}_highpass${f/./_}.nii.gz
                 tmpmean=`$0 tmean ${inputs[$j]}`
-                fslmaths ${inputs[$j]} -bptf $cutoffinsec -1 -add $tmpmean $outname > /dev/null
+                fslmaths ${inputs[$j]} -bptf $cutoffinsec -1 -add $tmpmean "$outname" > /dev/null
                 imrm $tmpmean
-                echo $outname
+                echo "$outname"
             done
             break
             ;;
@@ -454,15 +453,15 @@ do
             # Smooth with a Gaussian Kernel.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_smooth${f/./_}.nii.gz
-                fslmaths ${inputs[$j]} -s $f $outname > /dev/null
-                echo $outname
+                fslmaths ${inputs[$j]} -s "$f" "$outname" > /dev/null
+                echo "$outname"
             done
             break
             ;;
         susan|sue|smooth)
             # Smooth using FSL Susan, as done in FEAT.
             # Note that we don't use fslx pipeing facilities here to avoid intermediate files cleanly.
-            fwhm=$(python -c"from __future__ import division; from math import sqrt, log; print($f/(2*sqrt(2*log(2))))")
+            fwhm=$(python -c"from __future__ import division; from math import sqrt, log; print(\"$f\"/(2*sqrt(2*log(2))))")
             dims=3
             usemedian=1
             nusans=1
@@ -483,10 +482,10 @@ do
                 thresholdedfunc=`$0 applymask $mask ${inputs[$j]}`
                 meanthresholded=`$0 tmean $thresholdedfunc`
                 bt=$(python -c "print($median*0.75)")
-                susan $thresholdedfunc $bt $fwhm $dims $usemedian $nusans $meanthresholded $bt $outname
-                fslmaths $outname -mas $mask $outname # overwrite
+                susan $thresholdedfunc $bt $fwhm $dims $usemedian $nusans $meanthresholded $bt "$outname"
+                fslmaths "$outname" -mas $mask "$outname" # overwrite
                 imrm $meanfunc $meanfuncbet $maskedfunc $mask $thresholdedfunc $meanthresholded ${outname}_usan_size.nii.gz
-                echo $outname
+                echo "$outname"
             done
             break
             ;;
@@ -495,11 +494,11 @@ do
             break
             ;;
         melodic|ica|pica)
-            melodic -i $f --report
-            currdir=`dirname $f`; currfile=`basename $f`; currfile="${currfile%%.*}"
+            melodic -i "$f" --report
+            currdir=`dirname "$f"`; currfile=`basename "$f"`; currfile="${currfile%%.*}"
             icadir=${currdir}/${currfile}.ica
             outname=${namesansextension}_IC.nii.gz
-            /usr/bin/cp ${icadir}/melodic_IC.nii.gz $outname
+            /usr/bin/cp ${icadir}/melodic_IC.nii.gz "$outname"
             /usr/bin/mv ${icadir} ${currdir}/${currfile}_ICAdir
             # mv ${icadir}/report ${currdir}/${currfile}_IC_reports
             # mv ${icadir}/mean.nii.gz ${icadir}/mask.nii.gz ${currdir}/${currfile}_IC_reports
@@ -507,16 +506,16 @@ do
             ;;
         # stats)
         #     # Stats
-        #     fslstats $f
+        #     fslstats "$f"
         #     ;;
         crosscorr|cc|crossc|crosscorrelation)
-            ccfile=`basename $f`
+            ccfile=`basename "$f"`
             ccfile="${ccfile%%.*}"
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_cc_to_${ccfile}.txt
-                echo "${ccfile} `basename ${inputs[$j]}` cc_value" > $outname
-                fslcc --noabs -p 3 -t .204 $f ${inputs[$j]} | sort -r -nk3 >> $outname
-                echo $outname
+                echo "${ccfile} `basename ${inputs[$j]}` cc_value" > "$outname"
+                fslcc --noabs -p 3 -t .204 "$f" ${inputs[$j]} | sort -r -nk3 >> "$outname"
+                echo "$outname"
             done
             break
             ;;
@@ -531,7 +530,7 @@ do
             OUTNAMEPPM3=${namesansextension}_overlay_3orient.ppm
             OUTNAMEPNG3=${namesansextension}_overlay_3orient.png
 
-            flirt -in $f -ref $REF_MNI -applyxfm -usesqform -out $TEMP1
+            flirt -in "$f" -ref $REF_MNI -applyxfm -usesqform -out $TEMP1
             overlay 1 0 $REF_MNI -A $TEMP1 0.9975 1 $TEMP2
             slicer $TEMP2 -S 24 1200 $OUTNAMEPPM -a ${OUTNAMEPPM3}
             sleep 0.2
@@ -547,14 +546,14 @@ do
         cluster)
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_clusterinfo.txt
-                cluster -i ${inputs[$j]} -t $f > $outname
-                correct_cluster_output $outname
-                echo $outname
+                cluster -i ${inputs[$j]} -t "$f" > "$outname"
+                correct_cluster_output "$outname"
+                echo "$outname"
             done
             break
             ;;
         testinputs)
-            echo ${inputs[@]}
+            echo "${inputs[@]}"
             break
             ;;
         testscript)
@@ -562,11 +561,11 @@ do
             break
             ;;
         tr|TR)
-            echo `fslinfo $f | /usr/bin/grep pixdim4 | /usr/bin/sed 's/pixdim4        //'`
+            echo `fslinfo "$f" | /usr/bin/grep pixdim4 | /usr/bin/sed 's/pixdim4        //'`
             ;;
         v|view)
-            fslview `echo ${inputs[@]}`
-            echo ${inputs[@]}
+            fslview $(echo "${inputs[@]}")
+            echo "${inputs[@]}"
             break
             ;;
         *)
