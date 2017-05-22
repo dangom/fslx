@@ -338,7 +338,7 @@ do
             #  Apply a mask on all inputs.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_masked.nii.gz
-                fslmaths ${inputs[$j]} -mas $f $outname > /dev/null
+                fslmaths $f -mas ${inputs[$j]} $outname > /dev/null
                 echo $outname
             done
             break
