@@ -322,7 +322,10 @@ do
             ;;
         bet|brain|rmskull)
             # Remove the skull from (ideally) an anatomical image.
-            bet2 -in $f -out ${namesansextension}_noskull.nii.gz
+            meanfile=`$0 tmean $f`
+            mask=`$0 betmask 0.3 $meanfile` # Be careful with 0.3.
+            fslmaths  $f -mas $mask ${namesansextension}_noskull.nii.gz
+            imrm $meanfile $mask
             echo ${namesansextension}_noskull.nii.gz
             ;;
         betmask|betm|betfracmask)
