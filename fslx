@@ -441,6 +441,10 @@ do
             break
             ;;
         highpass|highfilter|hfilter|hfilt|hpass)
+            if [ $# -lt 3 ]; then
+                echo "Missing argument. Syntax: fslx highpass PERIOD_IN_SECONDS file(s)"
+                exit 0
+            fi
             # Apply highpass temporal filter with cutoff from 2nd input.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 tr=`fslinfo ${inputs[$j]} | /usr/bin/grep pixdim4 | sed 's/pixdim4        //'`
@@ -463,6 +467,11 @@ do
             break
             ;;
         susan|sue|smooth)
+            if [ $# -lt 3 ]; then
+                echo "Missing argument. Syntax: fslx susan KERNELSIZE_MM file(s)"
+                exit 0
+            fi
+
             # Smooth using FSL Susan, as done in FEAT.
             # Note that we don't use fslx pipeing facilities here to avoid intermediate files cleanly.
             fwhm=$(python -c"from __future__ import division; from math import sqrt, log; print($f/(2*sqrt(2*log(2))))")
