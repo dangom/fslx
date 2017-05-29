@@ -573,16 +573,21 @@ do
             break
             ;;
         fdr|fdrcorrection|falsediscovery)
-            outdir=`mktemp`
+            outdir=`mktemp -d`
             currdir=`dirname "$f"`; currfile=`basename "$f"`; currfile="${currfile%%.*}"
             echo "1" > ${outdir}/fake.txt
             melodic -i "$f" --mix="${outdir}/fake.txt" --ICs=$f --Ostats --mmthresh=0.05d -o ${outdir}/${currfile} &> /dev/null
             outname=${namesansextension}_fdrcorrected.nii.gz
-            mv "${outdir}/${currfile}/stats/thresh_zstat1.nii.gz" $outname
-            echo $outname
+            if [ -f "${outdir}/${currfile}/stats/thresh_zstat1.nii.gz" ]; then
+                mv "${outdir}/${currfile}/stats/thresh_zstat1.nii.gz" $outname
+                echo $outname
+            fi
             ;;
         testinputs)
             echo ${inputs[@]}
+            break
+            ;;
+        testinputssansextension)
             echo ${inputssansextension[@]}
             echo ${namesansextension}
             break
