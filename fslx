@@ -550,7 +550,7 @@ do
         cluster)
             if [ $# -lt 3 ]; then
                 echo "Missing argument. Syntax: fslx cluster THRESHOLD file(s)"
-                return
+                exit 0
             fi
 
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
