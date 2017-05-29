@@ -573,16 +573,18 @@ do
             break
             ;;
         fdr|fdrcorrection|falsediscovery)
-            mkdir -p /tmp/dangomfdr
-            currdir=`dirname $f`; currfile=`basename $f`; currfile="${currfile%%.*}"
-            echo "1" > /tmp/dangomfdr/fake.txt
-            melodic -i $f --mix="/tmp/dangomfdr/fake.txt" --ICs=$f --Ostats --mmthresh=0.05d -o /tmp/dangomfdr/${currfile} &> /dev/null
+            outdir=`mktemp`
+            currdir=`dirname "$f"`; currfile=`basename "$f"`; currfile="${currfile%%.*}"
+            echo "1" > ${outdir}/fake.txt
+            melodic -i "$f" --mix="${outdir}/fake.txt" --ICs=$f --Ostats --mmthresh=0.05d -o ${outdir}/${currfile} &> /dev/null
             outname=${namesansextension}_fdrcorrected.nii.gz
-            mv /tmp/dangomfdr/${currfile}/stats/thresh_zstat1.nii.gz $outname
+            mv "${outdir}/${currfile}/stats/thresh_zstat1.nii.gz" $outname
             echo $outname
             ;;
         testinputs)
             echo ${inputs[@]}
+            echo ${inputssansextension[@]}
+            echo ${namesansextension}
             break
             ;;
         testscript)
