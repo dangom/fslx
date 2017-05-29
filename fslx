@@ -548,9 +548,14 @@ do
             echo $OUTNAMEPNG3
             ;;
         cluster)
+            if [ $# -lt 3 ]; then
+                echo "Missing argument. Syntax: fslx cluster THRESHOLD file(s)"
+                return
+            fi
+
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_clusterinfo.txt
-                cluster -i ${inputs[$j]} -t $f > $outname
+                cluster --in=${inputs[$j]} --thresh=$f > $outname
                 correct_cluster_output $outname
                 echo $outname
             done
