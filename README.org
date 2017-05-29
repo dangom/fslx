@@ -64,24 +64,20 @@ As of yet, FSLX supports the following:
 | header or hd               | Read image header                    | no       | fslhd                   |
 | nvols                      | Query number of volumes in image     | no       | fslnvols                |
 | cc or crosscorr            | Compute cross correlation            | no       | fslcc                   |
-| cluster <THRESHOLD>        | Compute clusters above threshold     | no       | cluster                 |
+| cluster <THRESH>           | Compute clusters above threshold     | no       | cluster                 |
 | fdr                        | False Discovery Rate Correction      | yes      | melodic                 |
 | info                       | Query info, e.g., image dimensions   | no       | fslinfo                 |
 | tr or TR                   | Query the TR                         | no       | fslinfo                 |
 
 Coming soon, hopefully: stats, segmentation with FAST, smart registration to MNI152.
 
-Notes: output ICs from Melodic will be copied to local folder to be consistent with fslx
-conventions. Moreover, the Melodic output folder will be renamed but the contents will not be changed.
-I consider this to be a good middle ground between usability and compatibility with other tools that
-expect a Melodic directory as input, such as ICA-AROMA.
+Notes: output ICs from Melodic will be copied to local folder to be consistent with fslx conventions. Moreover, the Melodic output folder will be renamed but the contents will not be changed.
+I consider this to be a good middle ground between usability and compatibility with other tools that expect a Melodic directory as input, such as ICA-AROMA.
 
-Notes2: Motion correction for multiple echoes applies the transforms obtained by motion correcting the
-first echo on all subsequent echoes.
+Notes2: Motion correction for multiple echoes applies the transforms obtained by motion correcting the first echo on all subsequent echoes.
 
-Notes3: Highpass and lowpass filters accept a cutoff parameter in SECONDS. The
-conversion to volumes is done inside of fslx. Filters also add the mean back, so
-the user doesn't have to do it. I feel that is a better default for most use cases.
+Notes3: Highpass and lowpass filters accept a cutoff parameter in SECONDS. The conversion to volumes is done inside of fslx. Filters also add the mean back, so the user doesn't have to do it. I feel that is a better default for most use cases.
+
 ** Piping commands
 You can use xargs to build a nice easy processing pipeline. Most operations are
 supported. Example - motion correct, compute the tSNR, remove NaNs of all 4D
@@ -138,14 +134,11 @@ echo 'export "PATH='$currdir'/fslx/:$PATH"' >> ~/.bashrc
 - GNU Realink (for macOS: =brew install coreutils=). Will remove dependency eventually.
 
 ** TO DO
-- *PRIORITY*: Support relative filenames.
-- Support for applyxfm, registration to MNI, concatenate transformation matrices.
-- FAST segmentation
-- Add support for dual_regression
-- Add support for mixture modelling.
-- Support for pipe filtering: fslx moco | xfslx when TR smaller than 2 | xfslx highpass
-- Read from STDIN?
-- Be cleverer wrt output directories?
+- [x] *PRIORITY*: Support relative filenames.
+- [ ] Support for applyxfm, registration to MNI, concatenate transformation matrices.
+- [ ]FAST segmentation
+- [ ] Add support for dual_regression and randomize
+- [ ] Add support for mixture modelling.
 
 ** Why?
 Pick one that suits you:
@@ -163,3 +156,7 @@ The poweful BASH.
 * Disclaimer
 
 This tool is not a part of FSL. Use at your own risk.
+
+THE PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT WITHOUT ANY WARRANTY. IT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW THE AUTHOR WILL BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF THE AUTHOR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. 
