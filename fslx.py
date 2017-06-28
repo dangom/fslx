@@ -103,8 +103,8 @@ Example: fslx.py --in-place --target-directory "$HOME" moco img1 img2
                         help="An output directory to store output files.")
     parent.add_argument('-i', '--in-place', action='store_true',
                         help="After succesful execution, delete the inputs.")
-    parent.add_argument('inputfiles', nargs='*', type=argparse.FileType('r'),
-                        help="A list of input types to operate on.")
+    # parent.add_argument('inputfiles', nargs='*', type=argparse.FileType('r'),
+    #                     help="A list of input files to operate on.")
 
     # Top level parser.
     parser = argparse.ArgumentParser(prog="FSLX",
@@ -123,15 +123,14 @@ Example: fslx.py --in-place --target-directory "$HOME" moco img1 img2
                                                     parents=[parent])
         if op.argument is not None:
             op_parsers[op_name].add_argument(op.argument)
-        # op_parsers[op_name].add_argument('inputfiles', nargs='*', type=argparse.FileType('r'),
-        #                                  help="A list of input types to operate on.")
+        op_parsers[op_name].add_argument('inputfiles', nargs='*', type=argparse.FileType('r'),
+                                         help="A list of input types to operate on.")
 
 
+    # parser.add_argument('inputfiles', nargs='*', type=argparse.FileType('r'),
+    #                     help="A list of input files to operate on.")
 
 
     args = parser.parse_args()
-    op_args = {}
-    for key, subparser in op_parsers.items():
-        op_args[key] = subparser.parse_args()
-
+    op_parsers[args.chosen_op].parse_args()
     print(args.chosen_op)
