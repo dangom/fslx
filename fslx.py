@@ -1,16 +1,19 @@
-#!/bin/env python
+#!/usr/bin/env python3
 """
 FSLX.py is an attempt of extending FSLX and controlling it's complexity.
 It's goal is to be safer to use, provide better error handling, and
 offer support for arbitrary output directories.
 """
-import os
 import argparse
+import os
 import random
-import textwrap
 import subprocess
+import tempfile
+import textwrap
 from collections import namedtuple
 from functools import wraps
+
+import nibabel as nib  # Only to read the TR.
 
 # A NamedTuple to store the relevant information for each operation.
 Operations = namedtuple('FSLX_Operation',
@@ -46,6 +49,20 @@ def operate(name, argument=None, pipe=False, parallel=False):
 
     return real_operate
 
+def fslx_output_handler(inputfile, suffix, targetdir=None):
+    """Add a suffix to the inputfile, and change its
+    directory. The result can be used as a filename for
+    outputfiles. If targetdir is None, then do not change it.
+
+    :param inputfile: A filename
+    :param suffix: A suffix to append to the filename
+    :param targetdir: Change the input filename to target dir.
+    :returns: outputfile
+    :rtype: String
+
+    """
+    pass
+
 
 @operate('nvols')
 def nvols(inputfile):
@@ -58,18 +75,26 @@ def nvols(inputfile):
     print(subprocess.check_output(command).decode('utf-8'))
 
 
-def check_inputs(inputfiles):
-    """Check if all inputs are valid for FSLX.
+@operate('highpass', 'sigma', True, True)
+def highpass(inputfile, sigma, targetdir=None):
 
-    :param inputfiles: An iterable with filenames
-    :returns: None
-    :rtype: None
+    tr = nib.load(inputfile).header.structarr['pixdim'][4]
+    cutoff_s = 1/tr * sigma/
+    2
+    fsl_command = 'fslmaths'
+    # Step 1, compute the mean.
+    temp = tempfile.mkstemp('_FSLX.nii.gz', 'hpass_mean_')
+    command = [fsl_command, inputfile, '-Tmean', temp[1]]
+    res = subprocess.check_output(command)
 
-    """
-    for inputfile in inputfiles:
-        if not os.path.exists(inputfile):
-            print(f"FSLX cannot find $inputfile")
-            raise FileExistsError
+    # Step 2, highpass and add the mean back.
+
+    outputfile = fslx_output_handler(inputfile, suffix, targetdir)
+
+    cutoff_arg = '-btpf -1'
+    command = [fsl_command, inputfile, cutoff_arg, str(sigma),
+               '-add', temp[1], outputfile]
+    res = subprocess.check_output(command)
 
 
 if __name__ == "__main__":
@@ -132,5 +157,6 @@ Example: fslx.py --in-place --target-directory "$HOME" moco img1 img2
 
 
     args = parser.parse_args()
-    op_parsers[args.chosen_op].parse_args()
-    print(args.chosen_op)
+
+    for inputfile in args.inputfiles:
+        IMPLEMENTED_OPERATIONS[args.chosen_op].command(inputfile.name)
