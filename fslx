@@ -24,7 +24,7 @@
 # nor the inconsistent parameter naming conventions of each of them.
 # It also accepts multiple images as input to perform the same operations,
 # so one can do something like:
-# ls | xarg/project/3015046.02/derivatives/analysis/IC1/Random/IC1_diff_MB_MB_diffAver_tfce_corrp_tstat1_masked.nii.gzs fslx nan
+# ls | xargs fslx nan
 # And remove nans of all images in a particular directory, for example.
 # TODO: Support for applyxfm, registration to MNI, concatenate transformation matrices.
 # TODO: Read from STDIN?
