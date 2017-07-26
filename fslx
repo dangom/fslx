@@ -434,6 +434,10 @@ do
             done
             break
             ;;
+        changetype|chfiletype|chtype)
+            fslchfiletype ANALYZE $f
+            echo ${namesansextension}.img
+            ;;
         bandpass|bandfilter|bfilter|bfilt)
             # Apply bandpass temporal filter
             ;;
