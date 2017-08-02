@@ -600,6 +600,15 @@ do
             outname=${namesansextension}_fdrcorrected.nii.gz
             fdr -i $f -q 0.05 --othresh=$outname --oneminusp
             ;;
+        fdrmask|fdrm|fdrwithmask)
+            # Usage: fslx fdrmask MASK f1 f2 f3 ...
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${inputssansextension[$j]}_fdrmaskcorrected.nii.gz
+                fdr -m $f -i ${inputs[$j]} -q 0.05 --othresh=$outname --oneminusp
+                echo $outname
+            done
+            break
+            ;;
         testinputs)
             echo ${inputs[@]}
             break
