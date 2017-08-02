@@ -604,7 +604,7 @@ do
             # Usage: fslx fdrmask MASK f1 f2 f3 ...
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_fdrmaskcorrected.nii.gz
-                fdr -m $f -i ${inputs[$j]} -q 0.05 --othresh=$outname --oneminusp
+                fdr -i ${inputs[$j]} --oneminusp -m $f -q 0.05 --othresh=$outname >/dev/null
                 echo $outname
             done
             break
