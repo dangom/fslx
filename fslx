@@ -43,8 +43,8 @@ set -o errexit
 
 function echo_help {
     echo "Fslx requires at least two arguments: an operation and one or more inputs:"
-    echo "Compute mean image: fslx mean img1 img2"
-    echo "Outputs img1_mean and img2_mean"
+    echo "Compute (temporal) mean image: fslx tmean img1 img2"
+    echo "Outputs img1_tmean and img2_tmean"
     echo ""
     echo "Currently supported operations: moco|mc tmean tstd tsnr abs recip bin nan sin exp rmskull"
     echo "Thresholding lowthresh and highthresh. Syntax: fslx lowthresh number img1 img2"
@@ -182,7 +182,7 @@ do
             outname=${namesansextension}_tmean.nii.gz
             fslmaths $f -Tmean $outname; echo $outname
             ;;
-        simplestats|simplemean)
+        simplemean)
             pythoncode=$(cat <<EOF
 from __future__ import print_function, division
 import sys
@@ -195,6 +195,22 @@ vol = np.abs(nib.load("$f").get_data())
 print('{} {:.2f}'.format("$f", np.nanmean(vol)))
 EOF
 )
+            res="$(python -c "$pythoncode")"
+            echo $res
+            ;;
+        simplestd)
+            pythoncode=$(cat <<EOF
+from __future__ import print_function, division
+import sys
+try:
+    import nibabel as nib
+except ImportError:
+    print("FSLX simplemean requires python and the nibabel package to be installed.")
+import numpy as np
+vol = np.abs(nib.load("$f").get_data())
+print('{} {:.2f}'.format("$f", np.nanstd(vol)))
+EOF
+                      )
             res="$(python -c "$pythoncode")"
             echo $res
             ;;

@@ -38,6 +38,8 @@ As of yet, FSLX supports the following:
 | Operation                  | Effect                               | Pipeable | Original FSL operations |
 |----------------------------+--------------------------------------+----------+-------------------------|
 | tmean                      | Compute temporal mean                | yes      | fslmaths -Tmean         |
+| simplemean                 | Compute mean over all voxels         | no       | python + nibabel        |
+| simplestd                  | Compute std over all voxels          | no       | python + nibabel        |
 | tstd                       | Compute temporal std                 | yes      | fslmaths -Tstd          |
 | tsnr                       | Compute temporal tsnr                | yes      | fslmaths mean -div std  |
 | tsnrtr or trtsnr           | Compute temporal tsnr / sqrt(TR)     | yes      | fslmaths mean -div std  |
@@ -132,6 +134,7 @@ echo 'export "PATH='$currdir'/fslx/:$PATH"' >> ~/.bashrc
 - FSL
 - A Unix like environment with a sane shell available (Linux / MacOS).
 - GNU Realink (for macOS: =brew install coreutils=). Will remove dependency eventually.
+- For the simplemean and simplestd operations, python + nibabel are necessary.
 
 ** TO DO
 - [x] *PRIORITY*: Support relative filenames.
