@@ -186,7 +186,10 @@ do
             pythoncode=$(cat <<EOF
 from __future__ import print_function, division
 import sys
-import nibabel as nib
+try:
+    import nibabel as nib
+except ImportError:
+    print("FSLX simplemean requires python and the nibabel package to be installed.")
 import numpy as np
 vol = np.abs(nib.load("$f").get_data())
 print('{} {:.2f}'.format("$f", np.nanmean(vol)))
