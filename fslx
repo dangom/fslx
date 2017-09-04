@@ -182,6 +182,19 @@ do
             outname=${namesansextension}_tmean.nii.gz
             fslmaths $f -Tmean $outname; echo $outname
             ;;
+        simplestats|simplemean)
+            pythoncode=$(cat <<EOF
+from __future__ import print_function, division
+import sys
+import nibabel as nib
+import numpy as np
+vol = np.abs(nib.load("$f").get_data())
+print('{} {:.2f}'.format("$f", np.nanmean(vol)))
+EOF
+)
+            res="$(python -c "$pythoncode")"
+            echo $res
+            ;;
         tstd|Tstd)
             # Compute the standard deviation of the image in time. Reduces a 4D to a 3D volume.
             outname=${namesansextension}_tmean.nii.gz
