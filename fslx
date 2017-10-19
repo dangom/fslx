@@ -435,7 +435,7 @@ EOF
         merge)
             # Merge multiple 2d into a 3d, or multiple 3d into a 4d dataset.
             fslmerge -a ${inputssansextension[0]}_merged.nii.gz `echo ${inputssansextension[@]}`
-            echo inputssansextension_merged.nii.gz
+            echo ${inputssansextension[0]}_merged.nii.gz
             break
             ;;
         tmerge|merget|concatt|tconcat)
@@ -531,7 +531,7 @@ EOF
                 meanfuncbet=`$0 betfracmask 0.3 $meanfunc`
                 maskedfunc=`$0 applymask $meanfuncbet $meanfunc`
                 read percentile2 percentile98 <<< `fslstats $maskedfunc -p 2 -p 98`
-                threshold=$(python -c "from __future__ import division; print($percentile98 - $percentile2)/10.0")
+                threshold=$(python -c "from __future__ import division; print(($percentile98 - $percentile2)/10.0)")
                 premask1=`$0 lowthresh $threshold $maskedfunc`
                 premask2=`$0 tmin $premask1`
                 mask=`$0 bin $premask2`
