@@ -389,6 +389,19 @@ EOF
             done
             break
             ;;
+        mm|mixtuxemodel)
+            # Untested
+            # Syntax: fslx mm IC_map1 IC_map2 ...
+            grotfile=$(mktemp)
+            echo "1" > $grotfile
+            tmpmmdir=$(mktemp -d)
+            outname=${namesansextension}_MM.nii.gz
+            melodic -i $f --ICs=$f --mix=$grotfile -o $tmpmmdir --Oall --mmthresh=0
+            # Once melodic is done we can merge all output components into a single file
+            fslmerge -t ${outname} $(find $tmpmmdir -name "thresh_zstat*" | sort -V)
+            echo $outname
+            break
+            ;;
         inorm|intnorm)
             meanfile=`$0 tmean $f`
             mask=`$0 betmask 0.3 $meanfile`
@@ -460,8 +473,16 @@ EOF
             ;;
         align|register|reg|flirt)
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                outname=${inputssansextension[$j]}_reg_to_$f.nii.gz
+                outname=${inputssansextension[$j]}_reg.nii.gz
                 flirt -in ${inputs[j]} -ref $f -out $outname > /dev/null
+                echo $outname
+            done
+            break
+            ;;
+        alignepi|registerepi|reg2highres)
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${inputssansextension[$j]}_reg.nii.gz
+                mcflirt -in ${inputs[j]} -r $f -out $outname > /dev/null
                 echo $outname
             done
             break
