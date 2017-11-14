@@ -70,6 +70,7 @@ As of yet, FSLX supports the following:
 | fdr                        | False Discovery Rate Correction      | yes      | melodic                 |
 | info                       | Query info, e.g., image dimensions   | no       | fslinfo                 |
 | tr or TR                   | Query the TR                         | no       | fslinfo                 |
+| mm or mixturemodel         | Mixture modelling of IC components   | yes      | melodic                 |
 
 Coming soon, hopefully: stats, segmentation with FAST, smart registration to MNI152.
 
@@ -141,7 +142,7 @@ echo 'export "PATH='$currdir'/fslx/:$PATH"' >> ~/.bashrc
 - [ ] Support for applyxfm, registration to MNI, concatenate transformation matrices.
 - [ ]FAST segmentation
 - [ ] Add support for dual_regression and randomize
-- [ ] Add support for mixture modelling.
+- [x] Add support for mixture modelling.
 
 ** Why?
 Pick one that suits you:
