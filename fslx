@@ -396,7 +396,7 @@ EOF
             echo "1" > $grotfile
             tmpmmdir=$(mktemp -d)
             outname=${namesansextension}_MM.nii.gz
-            melodic -i $f --ICs=$f --mix=$grotfile -o $tmpmmdir --Oall --mmthresh=0
+            melodic -i $f --ICs=$f --mix=$grotfile -o $tmpmmdir --Oall --mmthresh=0.5
             # Once melodic is done we can merge all output components into a single file
             fslmerge -t ${outname} $(find $tmpmmdir -name "thresh_zstat*" | sort -V)
             echo $outname
