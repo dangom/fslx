@@ -589,6 +589,14 @@ EOF
         #     # Stats
         #     fslstats $f
         #     ;;
+        meants)
+            for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
+                outname=${inputssansextension[$j]}_meants.txt
+                fslmeants -i ${inputs[$j]} -m $f >> $outname
+                echo $outname
+            done
+            break
+            ;;
         crosscorr|cc|crossc|crosscorrelation)
             ccfile=`basename $f`
             ccfile="${ccfile%%.*}"
