@@ -219,6 +219,17 @@ EOF
             outname=${namesansextension}_tmean.nii.gz
             fslmaths $f -Tstd $outname; echo $outname
             ;;
+        demean)
+            #
+            outname=${namesansextension}_demeaned.nii.gz
+            fslmaths $f -Tmean -mul -1 -add $f $outname; echo $outname
+            ;;
+        varnorm)
+            outname=${namesansextension}_varnorm.nii.gz
+            stdimg=$(mktemp)
+            fslmaths $f -Tstd $stdimg
+            fslmaths $f -div $stdimg $outname; echo $outname
+            ;;
         tsnr)
             # Compute the ratio of the mean and standard deviation of the image (in time). Reduces a 4D to a 3D volume.
             fslmaths $f -Tmean ${namesansextension}_mean_deleteme.nii.gz
@@ -527,9 +538,10 @@ EOF
             ;;
         gauss)
             # Smooth with a Gaussian Kernel.
+            fwhm=$(python -c"from __future__ import division; from math import sqrt, log; print($f/(2*sqrt(2*log(2))))")
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
                 outname=${inputssansextension[$j]}_smooth${f/./_}.nii.gz
-                fslmaths ${inputs[$j]} -s $f $outname > /dev/null
+                fslmaths ${inputs[$j]} -s $fwhm $outname > /dev/null
                 echo $outname
             done
             break
