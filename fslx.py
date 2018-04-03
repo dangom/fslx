@@ -79,8 +79,7 @@ def nvols(inputfile):
 def highpass(inputfile, sigma, targetdir=None):
 
     tr = nib.load(inputfile).header.structarr['pixdim'][4]
-    cutoff_s = 1/tr * sigma/
-    2
+    cutoff_s = 1/tr * sigma/2
     fsl_command = 'fslmaths'
     # Step 1, compute the mean.
     temp = tempfile.mkstemp('_FSLX.nii.gz', 'hpass_mean_')
