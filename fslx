@@ -216,7 +216,7 @@ EOF
             ;;
         tstd|Tstd)
             # Compute the standard deviation of the image in time. Reduces a 4D to a 3D volume.
-            outname=${namesansextension}_tmean.nii.gz
+            outname=${namesansextension}_tstd.nii.gz
             fslmaths $f -Tstd $outname; echo $outname
             ;;
         demean)
