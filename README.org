@@ -2,11 +2,9 @@
 #+AUTHOR: Daniel Gomez
 #+DATE: 14.12.2016
 
-/fslx/ is a *dumb* wrapper around some of fsltools. It exists so I don't have to
-remember the arbitrary names of fsl tools, nor the parameter naming
+/fslx/ is a *simple* wrapper around some of FSL tools. It exists so that users don't have to
+remember the arbitrary names of FSL tools, nor the parameter naming
 conventions of each of them.
-There are probably thousands of tools like this one out there, but they weren't on
-my search engine's top 3, so I had to write my own.
 
 ** Syntax
 
@@ -21,14 +19,14 @@ Exceptions to the rule are simple to remember though, such as in the case of rea
 fslx reg reference img1 img2 img3
 #+END_SRC
 
-Another exception is merging files, where fslx does exactly what you would
+Another exception is merging files, where fslx does what the user would
 expect - it merges all inputs.
 #+BEGIN_SRC bash
 fslx merge img1 img2 img3
 #+END_SRC
 
 
-To make things even dumber, operations have alias so that you can type synonyms
+To make things as simple and intuitive as possible, operations have alias so that  synonyms can be used
 and things just work. Alignment, for example, can be called with any of ~reg|align|register~.
 
 ** Supported operations
@@ -82,18 +80,20 @@ Notes2: Motion correction for multiple echoes applies the transforms obtained by
 Notes3: Highpass and lowpass filters accept a cutoff parameter in SECONDS. The conversion to volumes is done inside of fslx. Filters also add the mean back, so the user doesn't have to do it. I feel that is a better default for most use cases.
 
 ** Piping commands
-You can use xargs to build a nice easy processing pipeline. Most operations are
+
+You can use xargs to build processing pipelines. Most operations are
 supported. Example - motion correct, compute the tSNR, remove NaNs of all 4D
 niftis in a directory (and register then to a T1 weighted, of course):
 #+BEGIN_SRC bash
 ls | xargs flsx moco | xargs fslx tsnr | xargs fslx nan | xargs fslx reg T1w
 #+END_SRC
 
-To maximize dumbness, you can alias ~xargs fslx~:
+To maximize simplicity, you can alias ~xargs fslx~:
 #+BEGIN_SRC bash
 alias xfslx='xargs fslx '
 ls | xflsx moco | xfslx tsnr | xfslx nan | xfslx reg T1w > list_of_processed_files.txt
 #+END_SRC
+
 And then call the pipe with less verbosity.
 
 To see intermediate results, simply add a call to the viewer in the middle of your pipe:
@@ -101,7 +101,6 @@ To see intermediate results, simply add a call to the viewer in the middle of yo
 alias xfslx='xargs fslx '
 ls | xfslx moco | xfslx tsnr | xfslx nan | xfslx v |xfslx reg T1w > list_of_processed_files.txt
 #+END_SRC
-
 
 Note: you get /all/ of your intermediate results, so make sure you have enough
 disk space. If you don't want to store intermediate results, you can probably
@@ -112,7 +111,7 @@ when all processing is done successfully, example:
 ls | xfslx moco | tee mocoed.txt | xfslx tsnr >/dev/null; cat mocoed.txt | xargs rm
 #+END_SRC
 
-Note2: fslx is so dumb it doesn't allow configuring output directories yet.
+Note2: fslx doesn't allow configuring output directories yet.
 Therefore, as a workaround you can use ~xargs~ and ~mv~ to output files to wherever you want:
 
 #+BEGIN_SRC bash
@@ -122,6 +121,7 @@ xargs -a tsnred.txt mv -t /path/where/tsnred/files/should/go
 #+END_SRC
 
 ** Installation
+
 Put fslx on your PATH.
 
 #+BEGIN_SRC bash
@@ -132,9 +132,10 @@ echo 'export "PATH='$currdir'/fslx/:$PATH"' >> ~/.bashrc
 #+END_SRC
 
 ** Dependencies
+
 - FSL
-- A Unix like environment with a sane shell available (Linux / MacOS).
-- GNU Realink (for macOS: =brew install coreutils=). Will remove dependency eventually.
+- A Unix like environment with a shell available.
+- GNU Readlink (for macOS: =brew install coreutils=). Will remove dependency eventually.
 - For the simplemean and simplestd operations, python + nibabel are necessary.
 
 ** TO DO
@@ -145,15 +146,15 @@ echo 'export "PATH='$currdir'/fslx/:$PATH"' >> ~/.bashrc
 - [x] Add support for mixture modelling.
 
 ** Why?
-Pick one that suits you:
-
-- Nipype takes too many lines of code and I have a PhD to finish.
-- The lack of sleep makes me forget fsl commands, and the Wiki doesn't see much loving.
-- FSL has decent defaults and 99% of the times I don't need to customize anything.
-- Gee, what the hell happened to my data?
 
 
-* Thanks
+- Other pipelines are too verbose  and do not allow for quick data exploration.
+- Its common to forget FSL naming conventions, and the Wiki isn't always clear.
+- FSL has decent defaults and 95% of the times there is no need to customize anything.
+
+
+* Acknowledgements
+
 The awesome [[https://fsl.fmrib.ox.ac.uk/fsl/fslwiki][FSL]].
 The poweful BASH.
 
