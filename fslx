@@ -509,8 +509,8 @@ EOF
             #  Apply lowpass temporal filter.
             # Apply highpass temporal filter with cutoff from 2nd input.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                tr=`fslinfo ${inputs[$j]} | /usr/bin/grep pixdim4 | sed 's/pixdim4        //'`
-                cutoffinsec=$(python -c "from __future__ import division; print('%.2f' % ((1/$tr)*($f/2)))")
+                tr=`fslinfo ${inputs[$j]} | /usr/bin/grep pixdim4 | awk '{print $2}'`
+                cutoffinsec=$(python2 -c "from __future__ import division; print('%.2f' % ((1/$tr)*($f/2)))")
                 outname=${inputssansextension[$j]}_lowpass${f/./_}.nii.gz
                 tmpmean=`$0 tmean ${inputs[$j]}`
                 fslmaths ${inputs[$j]} -bptf -1 $cutoffinsec -add $tmpmean $outname > /dev/null
@@ -526,7 +526,7 @@ EOF
             fi
             # Apply highpass temporal filter with cutoff from 2nd input.
             for (( j=1 ; j<${#inputs[@]}; j++ )) ; do
-                tr=`fslinfo ${inputs[$j]} | /usr/bin/grep pixdim4 | sed 's/pixdim4        //'`
+                tr=`fslinfo ${inputs[$j]} | /usr/bin/grep pixdim4 | awk '{print $2}'`
                 cutoffinsec=$(python -c "from __future__ import division; print('%.2f' % ((1/$tr)*($f/2)))")
                 outname=${inputssansextension[$j]}_highpass${f/./_}.nii.gz
                 tmpmean=`$0 tmean ${inputs[$j]}`
