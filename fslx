@@ -227,6 +227,14 @@ EOF
             outname=${namesansextension}_asldiff-ct.nii.gz
             asl_file --data=$f --ntis=1 --iaf=ct --diff --out=$outname
             ;;
+        aslsurrdiff-tc)
+            outname=${namesansextension}_aslsurrdiff-tc.nii.gz
+            asl_file --data=$f --ntis=1 --iaf=tc --surrdiff --out=$outname
+            ;;
+        aslsurrdiff-ct)
+            outname=${namesansextension}_aslsurrdiff-ct.nii.gz
+            asl_file --data=$f --ntis=1 --iaf=ct --surrdiff --out=$outname
+            ;;
         demean)
             #
             outname=${namesansextension}_demeaned.nii.gz
