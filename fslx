@@ -219,6 +219,14 @@ EOF
             outname=${namesansextension}_tstd.nii.gz
             fslmaths $f -Tstd $outname; echo $outname
             ;;
+        asldiff-tc)
+            outname=${namesansextension}_asldiff-tc.nii.gz
+            asl_file --data=$f --ntis=1 --iaf=tc --diff --out=$outname
+            ;;
+        asldiff-ct)
+            outname=${namesansextension}_asldiff-ct.nii.gz
+            asl_file --data=$f --ntis=1 --iaf=ct --diff --out=$outname
+            ;;
         demean)
             #
             outname=${namesansextension}_demeaned.nii.gz
